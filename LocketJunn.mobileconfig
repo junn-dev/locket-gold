@@ -33,7 +33,7 @@
     </dict>
   </array>
   <key>PayloadDisplayName</key>
-  <string>Locket Gold Junn 1.0.0</string>
+  <string>Locket Gold Junn 1.0.1</string>
   <key>PayloadIdentifier</key>
   <string>com.dnsprofile.nextdns.main</string>
   <key>PayloadRemovalDisallowed</key>
