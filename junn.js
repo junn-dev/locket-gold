@@ -23,15 +23,15 @@ var junnk6 = {
     expires_date: "2099-12-31T23:59:59Z",
     grace_period_expires_date: null,
     unsubscribe_detected_at: null,
-    original_purchase_date: "2025-07-28T01:04:18Z",
-    purchase_date: "2025-07-28T01:04:17Z",
+    original_purchase_date: "2025-01-01T01:01:01Z",
+    purchase_date: "2025-01-01T01:01:01Z",
     store: "app_store"
 };
 
 // Thông tin sản phẩm cụ thể
 var junn = {
     grace_period_expires_date: null,
-    purchase_date: "2025-07-28T01:04:17Z",
+    purchase_date: "2025-01-01T01:01:01Z",
     product_identifier: "com.junnk6.premium.yearly",
     expires_date: "2099-12-31T23:59:59Z"
 };
@@ -57,3 +57,4 @@ if (match) {
 
 // Trả về body đã chỉnh sửa
 $done({ body: JSON.stringify(obj) });
+
