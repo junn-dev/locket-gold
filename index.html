@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cài đặt LocketGold</title>
+    <link rel="stylesheet" href="cosmic-interface.css">
+    <!-- Optional: Add these Google Fonts for the best experience -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Galaxy Background -->
+    <div class="galaxy-background">
+        <div class="nebula"></div>
+        <div class="nebula-overlay"></div>
+        <div class="cosmic-dust"></div>
+        <div class="stars-distant"></div>
+        <div class="stars-mid"></div>
+        <div class="stars-close"></div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="cosmic-container">
+        <div class="cosmic-card">
+            <h1 class="cosmic-heading">Cài đặt locket gold by Nguyen Van Kien</h1>
+            <p class="cosmic-text">Xin chào,đây là trang cài đặt locketgold của Kiên rất vui được gặp bạn.Hy vọng bạn sẽ hài lòng với dịch vụ của mình và giới thiệu với bạn bè nhé</p>
+            <a href="shadowrocket://install?module=https://raw.githubusercontent.com/vuong2023/shad/main/modules/Locket_ohb.sgmodule" class="cosmic-button">Cài Đặt Locket Ngay</a>
+        </div>
+    </div>
+
+    <script>
+        // The JavaScript from the CSS file will be executed here
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get star layers
+            const starsDistant = document.querySelector('.stars-distant');
+            const starsMid = document.querySelector('.stars-mid');
+            const starsClose = document.querySelector('.stars-close');
+            
+            // Generate stars for distant layer (300 tiny stars)
+            for (let i = 0; i < 300; i++) {
+                createStar(starsDistant, 0.5, 1, 5, 10);
+            }
+            
+            // Generate stars for mid layer (200 medium stars)
+            for (let i = 0; i < 200; i++) {
+                createStar(starsMid, 1, 2, 3, 7);
+            }
+            
+            // Generate stars for close layer (100 larger stars)
+            for (let i = 0; i < 100; i++) {
+                createStar(starsClose, 1.5, 3, 2, 5);
+            }
+            
+            // Generate floating particles (50 particles)
+            for (let i = 0; i < 50; i++) {
+                createParticle(starsClose);
+            }
+            
+            // Create shooting stars occasionally
+            setInterval(() => {
+                if (Math.random() > 0.7) { // 30% chance of shooting star
+                    createShootingStar(starsClose);
+                }
+            }, 2000);
+            
+            // Parallax effect on mouse move
+            document.addEventListener('mousemove', (e) => {
+                const mouseX = e.clientX / window.innerWidth;
+                const mouseY = e.clientY / window.innerHeight;
+                
+                starsDistant.style.transform = `translateZ(-0.75px) scale(1.75) translate(${mouseX * -40}px, ${mouseY * -40}px)`;
+                starsMid.style.transform = `translateZ(-0.5px) scale(1.5) translate(${mouseX * -25}px, ${mouseY * -25}px)`;
+                starsClose.style.transform = `translateZ(-0.25px) scale(1.25) translate(${mouseX * -15}px, ${mouseY * -15}px)`;
+            });
+            
+            // Helper function to create a star
+            function createStar(parent, minSize, maxSize, minDuration, maxDuration) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.position = 'absolute';
+                star.style.width = `${Math.random() * (maxSize - minSize) + minSize}px`;
+                star.style.height = star.style.width;
+                star.style.backgroundColor = 'white';
+                star.style.borderRadius = '50%';
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.opacity = Math.random() * 0.5 + 0.3;
+                star.style.animation = `twinkle ${Math.random() * (maxDuration - minDuration) + minDuration}s ease-in-out infinite`;
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                
+                parent.appendChild(star);
+            }
+            
+            // Helper function to create a particle
+            function createParticle(parent) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.position = 'absolute';
+                particle.style.width = `${Math.random() * 3 + 1}px`;
+                particle.style.height = particle.style.width;
+                particle.style.backgroundColor = 'rgba(255, 255, 255, 0.6)';
+                particle.style.borderRadius = '50%';
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.opacity = Math.random() * 0.5 + 0.1;
+                particle.style.animation = `float ${Math.random() * 20 + 10}s ease-in-out infinite`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                particle.style.animationDirection = 'alternate';
+                
+                parent.appendChild(particle);
+            }
+            
+            // Helper function to create a shooting star
+            function createShootingStar(parent) {
+                const shootingStar = document.createElement('div');
+                shootingStar.className = 'shooting-star';
+                shootingStar.style.position = 'absolute';
+                shootingStar.style.width = '2px';
+                shootingStar.style.height = '2px';
+                shootingStar.style.backgroundColor =                 'white';
+                shootingStar.style.borderRadius = '50%';
+                shootingStar.style.left = `${Math.random() * 100}%`;
+                shootingStar.style.top = `${Math.random() * 50}%`;
+                shootingStar.style.opacity = 0.8;
+                shootingStar.style.transform = `rotate(${Math.random() * 360}deg)`;
+                shootingStar.style.animation = `shoot 1.5s linear`;
+
+                document.body.appendChild(shootingStar);
+
+                setTimeout(() => {
+                    shootingStar.remove();
+                }, 1500);
+            }
+
+        });
+    </script>
+
+    <style>
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+
+        @keyframes shoot {
+            0% {
+                transform: translateX(0) translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(-200px) translateY(200px) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .galaxy-background {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #20002c, #0c002b);
+            overflow: hidden;
+        }
+
+        .star, .particle, .shooting-star {
+            position: absolute;
+        }
+
+        .cosmic-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cosmic-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .cosmic-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #ff6b6b;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .cosmic-button:hover {
+            background: #ff4757;
+            transform: scale(1.1);
+        }
+    </style>
+</body>
+</html>

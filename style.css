@@ -1,0 +1,562 @@
+/* 
+ * Cosmic Interface - Ultra-Smooth Galaxy Effect
+ * A modern, responsive, and visually stunning space-themed design
+ */
+
+/* ---------- Base Styles & Reset ---------- */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  :root {
+    /* Color Variables */
+    --deep-space: #0a0a2a;
+    --cosmic-blue: #1a1a5f;
+    --nebula-purple: #4a1a8c;
+    --stellar-pink: #c21e8a;
+    --stardust: #f5f5f5;
+    --cosmic-glow: rgba(138, 43, 226, 0.8);
+    
+    /* Font Variables */
+    --font-main: 'Montserrat', 'Arial', sans-serif;
+    --font-heading: 'Orbitron', 'Verdana', sans-serif;
+    
+    /* Animation Variables */
+    --transition-fast: 0.3s ease;
+    --transition-medium: 0.5s ease;
+    --transition-slow: 1s ease;
+  }
+  
+  html {
+    font-size: 62.5%; /* 10px base for easier rem calculations */
+    height: 100%;
+  }
+  
+  body {
+    font-family: var(--font-main);
+    min-height: 100vh;
+    color: var(--stardust);
+    overflow-x: hidden;
+    background-color: var(--deep-space);
+    perspective: 1px;
+    transform-style: preserve-3d;
+    overflow-y: auto;
+    font-size: 1.6rem;
+  }
+  
+  /* ---------- Galaxy Background ---------- */
+  .galaxy-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -10;
+  }
+  
+  /* Main nebula gradient */
+  .nebula {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, 
+      var(--deep-space) 0%, 
+      var(--cosmic-blue) 25%, 
+      var(--nebula-purple) 50%, 
+      var(--stellar-pink) 75%, 
+      var(--deep-space) 100%
+    );
+    background-size: 400% 400%;
+    animation: nebula-shift 30s ease infinite;
+    opacity: 0.8;
+    transform: translateZ(-2px) scale(3);
+  }
+  
+  /* Nebula overlay with radial gradient */
+  .nebula-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(10, 10, 42, 0.1) 0%,
+      rgba(10, 10, 42, 0.3) 40%,
+      rgba(10, 10, 42, 0.8) 100%
+    );
+    transform: translateZ(-1.5px) scale(2.5);
+  }
+  
+  /* Cosmic dust */
+  .cosmic-dust {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.15;
+    transform: translateZ(-1px) scale(2);
+  }
+  
+  /* Star layers */
+  .stars-distant, .stars-mid, .stars-close {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  
+  .stars-distant {
+    transform: translateZ(-0.75px) scale(1.75);
+  }
+  
+  .stars-mid {
+    transform: translateZ(-0.5px) scale(1.5);
+  }
+  
+  .stars-close {
+    transform: translateZ(-0.25px) scale(1.25);
+  }
+  
+  /* ---------- Main Content Container ---------- */
+  .cosmic-container {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem 2rem;
+  }
+  
+  .cosmic-card {
+    background: rgba(10, 10, 42, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 2rem;
+    padding: 4rem;
+    max-width: 60rem;
+    width: 100%;
+    text-align: center;
+    box-shadow: 
+      0 0 2rem rgba(138, 43, 226, 0.3),
+      0 0 4rem rgba(138, 43, 226, 0.2),
+      inset 0 0 1rem rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transform: translateY(0);
+    transition: transform var(--transition-medium), box-shadow var(--transition-medium);
+    animation: card-entrance 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    overflow: hidden;
+    position: relative;
+  }
+  
+  /* Glowing border effect */
+  .cosmic-card::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+      var(--cosmic-blue), 
+      var(--nebula-purple), 
+      var(--stellar-pink), 
+      var(--cosmic-blue)
+    );
+    background-size: 400% 400%;
+    z-index: -1;
+    border-radius: 2.2rem;
+    animation: border-glow 6s linear infinite;
+    opacity: 0.7;
+  }
+  
+  .cosmic-card:hover {
+    transform: translateY(-0.5rem);
+    box-shadow: 
+      0 0 3rem rgba(138, 43, 226, 0.4),
+      0 0 6rem rgba(138, 43, 226, 0.3),
+      inset 0 0 1.5rem rgba(255, 255, 255, 0.15);
+  }
+  
+  /* Heading styles */
+  .cosmic-heading {
+    font-family: var(--font-heading);
+    font-size: 4.2rem;
+    font-weight: 700;
+    margin-bottom: 2.5rem;
+    letter-spacing: 0.2rem;
+    background: linear-gradient(
+      90deg, 
+      #f5f5f5 0%, 
+      #c9a0ff 25%, 
+      #ff61ab 50%, 
+      #c9a0ff 75%, 
+      #f5f5f5 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: text-shine 6s linear infinite;
+    text-shadow: 0 0 2rem rgba(201, 160, 255, 0.5);
+    position: relative;
+  }
+  
+  /* Paragraph styles */
+  .cosmic-text {
+    font-size: 1.8rem;
+    line-height: 1.7;
+    margin-bottom: 3.5rem;
+    color: rgba(245, 245, 245, 0.9);
+    text-shadow: 0 0 1rem rgba(138, 43, 226, 0.3);
+  }
+  
+  /* Button styles */
+  .cosmic-button {
+    display: inline-block;
+    background: linear-gradient(
+      45deg, 
+      var(--cosmic-blue), 
+      var(--nebula-purple), 
+      var(--stellar-pink)
+    );
+    background-size: 200% 200%;
+    color: var(--stardust);
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 1.2rem 3.5rem;
+    border-radius: 5rem;
+    letter-spacing: 0.1rem;
+    text-transform: uppercase;
+    box-shadow: 
+      0 0.5rem 1.5rem rgba(0, 0, 0, 0.3),
+      0 0 1rem rgba(138, 43, 226, 0.5);
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition-fast);
+    animation: button-glow 3s infinite alternate;
+    border: none;
+    cursor: pointer;
+    z-index: 1;
+  }
+  
+  .cosmic-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: var(--transition-fast);
+    z-index: -1;
+  }
+  
+  .cosmic-button:hover {
+    transform: translateY(-0.3rem) scale(1.05);
+    box-shadow: 
+      0 0.8rem 2rem rgba(0, 0, 0, 0.4),
+      0 0 2rem rgba(138, 43, 226, 0.7);
+    background-position: right center;
+  }
+  
+  .cosmic-button:hover::before {
+    left: 100%;
+    transition: 0.7s;
+  }
+  
+  .cosmic-button:active {
+    transform: translateY(-0.1rem) scale(0.98);
+  }
+  
+  /* ---------- Animations ---------- */
+  /* Nebula background shift */
+  @keyframes nebula-shift {
+    0%, 100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+  
+  /* Text gradient animation */
+  @keyframes text-shine {
+    0% {
+      background-position: 0% center;
+    }
+    100% {
+      background-position: 200% center;
+    }
+  }
+  
+  /* Button glow animation */
+  @keyframes button-glow {
+    0% {
+      background-position: 0% 50%;
+      box-shadow: 
+        0 0.5rem 1.5rem rgba(0, 0, 0, 0.3),
+        0 0 1rem rgba(138, 43, 226, 0.5);
+    }
+    100% {
+      background-position: 100% 50%;
+      box-shadow: 
+        0 0.5rem 1.5rem rgba(0, 0, 0, 0.3),
+        0 0 2rem rgba(194, 30, 138, 0.7);
+    }
+  }
+  
+  /* Card entrance animation */
+  @keyframes card-entrance {
+    0% {
+      opacity: 0;
+      transform: translateY(3rem);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Border glow animation */
+  @keyframes border-glow {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
+  /* Star twinkling animation */
+  @keyframes twinkle {
+    0%, 100% {
+      opacity: 0.2;
+      transform: scale(0.8);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  /* Particle floating animation */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0) translateX(0);
+    }
+    25% {
+      transform: translateY(-20px) translateX(10px);
+    }
+    50% {
+      transform: translateY(0) translateX(20px);
+    }
+    75% {
+      transform: translateY(20px) translateX(10px);
+    }
+  }
+  
+  /* ---------- Responsive Design ---------- */
+  @media (max-width: 768px) {
+    html {
+      font-size: 56.25%; /* 9px base */
+    }
+    
+    .cosmic-card {
+      padding: 3rem;
+      max-width: 90%;
+    }
+    
+    .cosmic-heading {
+      font-size: 3.6rem;
+    }
+    
+    .cosmic-text {
+      font-size: 1.6rem;
+    }
+    
+    .cosmic-button {
+      font-size: 1.6rem;
+      padding: 1rem 3rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    html {
+      font-size: 50%; /* 8px base */
+    }
+    
+    .cosmic-card {
+      padding: 2.5rem;
+    }
+    
+    .cosmic-heading {
+      font-size: 3.2rem;
+    }
+    
+    .cosmic-text {
+      font-size: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    
+    .cosmic-button {
+      font-size: 1.5rem;
+      padding: 1rem 2.5rem;
+    }
+  }
+  
+  /* ---------- Accessibility ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+  
+  /* JavaScript to generate stars and particles */
+  /* This script will be executed when the page loads */
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get star layers
+    const starsDistant = document.querySelector('.stars-distant');
+    const starsMid = document.querySelector('.stars-mid');
+    const starsClose = document.querySelector('.stars-close');
+    
+    // Generate stars for distant layer (300 tiny stars)
+    for (let i = 0; i < 300; i++) {
+      createStar(starsDistant, 0.5, 1, 5, 10);
+    }
+    
+    // Generate stars for mid layer (200 medium stars)
+    for (let i = 0; i < 200; i++) {
+      createStar(starsMid, 1, 2, 3, 7);
+    }
+    
+    // Generate stars for close layer (100 larger stars)
+    for (let i = 0; i < 100; i++) {
+      createStar(starsClose, 1.5, 3, 2, 5);
+    }
+    
+    // Generate floating particles (50 particles)
+    for (let i = 0; i < 50; i++) {
+      createParticle(starsClose);
+    }
+    
+    // Create shooting stars occasionally
+    setInterval(() => {
+      if (Math.random() > 0.7) { // 30% chance of shooting star
+        createShootingStar(starsClose);
+      }
+    }, 2000);
+    
+    // Parallax effect on mouse move
+    document.addEventListener('mousemove', (e) => {
+      const mouseX = e.clientX / window.innerWidth;
+      const mouseY = e.clientY / window.innerHeight;
+      
+      starsDistant.style.transform = `translateZ(-0.75px) scale(1.75) translate(${mouseX * -40}px, ${mouseY * -40}px)`;
+      starsMid.style.transform = `translateZ(-0.5px) scale(1.5) translate(${mouseX * -25}px, ${mouseY * -25}px)`;
+      starsClose.style.transform = `translateZ(-0.25px) scale(1.25) translate(${mouseX * -15}px, ${mouseY * -15}px)`;
+    });
+    
+    // Helper function to create a star
+    function createStar(parent, minSize, maxSize, minDuration, maxDuration) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.position = 'absolute';
+      star.style.width = `${Math.random() * (maxSize - minSize) + minSize}px`;
+      star.style.height = star.style.width;
+      star.style.backgroundColor = 'white';
+      star.style.borderRadius = '50%';
+      star.style.left = `${Math.random() * 100}%`;
+      star.style.top = `${Math.random() * 100}%`;
+      star.style.opacity = Math.random() * 0.5 + 0.3;
+      star.style.animation = `twinkle ${Math.random() * (maxDuration - minDuration) + minDuration}s ease-in-out infinite`;
+      star.style.animationDelay = `${Math.random() * 5}s`;
+      
+      parent.appendChild(star);
+    }
+    
+    // Helper function to create a particle
+    function createParticle(parent) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.position = 'absolute';
+      particle.style.width = `${Math.random() * 3 + 1}px`;
+      particle.style.height = particle.style.width;
+      particle.style.backgroundColor = 'rgba(255, 255, 255, 0.6)';
+      particle.style.borderRadius = '50%';
+      particle.style.left = `${Math.random() * 100}%`;
+      particle.style.top = `${Math.random() * 100}%`;
+      particle.style.opacity = Math.random() * 0.5 + 0.1;
+      particle.style.animation = `float ${Math.random() * 20 + 10}s ease-in-out infinite`;
+      particle.style.animationDelay = `${Math.random() * 5}s`;
+      particle.style.animationDirection = 'alternate';
+      
+      parent.appendChild(particle);
+    }
+    
+    // Helper function to create a shooting star
+    function createShootingStar(parent) {
+      const shootingStar = document.createElement('div');
+      shootingStar.className = 'shooting-star';
+      shootingStar.style.position = 'absolute';
+      shootingStar.style.width = '2px';
+      shootingStar.style.height = '2px';
+      shootingStar.style.backgroundColor = 'white';
+      shootingStar.style.borderRadius = '50%';
+      shootingStar.style.left = `${Math.random() * 70}%`;
+      shootingStar.style.top = `${Math.random() * 30}%`;
+      shootingStar.style.boxShadow = '0 0 0 4px rgba(255,255,255,0.1), 0 0 0 8px rgba(255,255,255,0.05), 0 0 20px rgba(255,255,255,0.8)';
+      
+      const angle = Math.random() * 45 + 20; // Angle between 20 and 65 degrees
+      const duration = Math.random() * 2 + 1;
+      
+      shootingStar.style.transform = `rotate(${angle}deg)`;
+      shootingStar.style.animation = `shooting-star ${duration}s linear forwards`;
+      
+      parent.appendChild(shootingStar);
+      
+      // Remove shooting star after animation completes
+      setTimeout(() => {
+        shootingStar.remove();
+      }, duration * 1000 + 100);
+    }
+  });
+  
+  /* Shooting star animation */
+  @keyframes shooting-star {
+    0% {
+      transform: translateX(0) translateY(0);
+      opacity: 1;
+    }
+    70% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(500px) translateY(500px);
+      opacity: 0;
+    }
+  }
