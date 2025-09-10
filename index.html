@@ -1,105 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cài đặt LocketGold</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cài đặt Locket Gold</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Galaxy Background -->
-    <div class="galaxy-background">
-        <div class="stars-distant"></div>
-        <div class="stars-mid"></div>
-        <div class="stars-close"></div>
+  <!-- Galaxy Background -->
+  <div class="galaxy-background">
+    <div class="stars-distant"></div>
+    <div class="stars-mid"></div>
+    <div class="stars-close"></div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="cosmic-container">
+    <div class="cosmic-card">
+      <h1 class="cosmic-heading">Cài đặt Locket Gold</h1>
+      <p class="cosmic-text">Xin chào 👋 Đây là trang cài đặt LocketGold của Junn.k6. Chúc bạn trải nghiệm vui vẻ!</p>
+
+      <!-- Nút cài api fake response -->
+      <a href="shadowrocket://install?module=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.sgmodule" 
+         class="cosmic-button">🚀 Cài Đặt Locket Ngay</a>
+      
+      <!-- Nút cài cấu hình block api -->
+      <a class="btn" href="LocketJunn.mobileconfig">📥 Tải về Cấu Hình</a>
     </div>
+  </div>
 
-    <!-- Main Content -->
-    <div class="cosmic-container">
-        <div class="cosmic-card">
-            <h1 class="cosmic-heading">Cài đặt Locket Gold by Junn</h1>
-            <p class="cosmic-text">Xin chào! Đây là trang cài đặt LocketGold của junn.k6. Hy vọng bạn sẽ hài lòng và giới thiệu với bạn bè nhé!</p>
+  <script>
+    // ===================== Stars & Cosmic JS =====================
+    document.addEventListener('DOMContentLoaded', function() {
+      const starsDistant = document.querySelector('.stars-distant');
+      const starsMid = document.querySelector('.stars-mid');
+      const starsClose = document.querySelector('.stars-close');
 
-            <!-- Nút cài api fake response -->
-            <a href="shadowrocket://install?module=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.sgmodule" 
-               class="cosmic-button">Cài Đặt Locket Ngay</a>
-            
-            <!-- Nút cài cấu hình block api -->
-            <a class="btn" href="LocketJunn.mobileconfig">📥 Tải về cấu hình</a>
-        </div>
-    </div>
+      function createStar(parent, minSize,maxSize,minDur,maxDur){
+        const s=document.createElement('div');
+        s.className='star';
+        const size=Math.random()*(maxSize-minSize)+minSize;
+        s.style.width=s.style.height=size+'px';
+        s.style.backgroundColor='white';
+        s.style.left=Math.random()*100+'%';
+        s.style.top=Math.random()*100+'%';
+        s.style.opacity=Math.random()*0.5+0.3;
+        s.style.animation=`twinkle ${Math.random()*(maxDur-minDur)+minDur}s ease-in-out infinite`;
+        s.style.animationDelay=Math.random()*5+'s';
+        parent.appendChild(s);
+      }
 
-    <script>
-        // ===================== Stars & Cosmic JS =====================
-        document.addEventListener('DOMContentLoaded', function() {
-            const starsDistant = document.querySelector('.stars-distant');
-            const starsMid = document.querySelector('.stars-mid');
-            const starsClose = document.querySelector('.stars-close');
+      function createParticle(parent){
+        const p=document.createElement('div');
+        p.className='particle';
+        const size=Math.random()*3+1;
+        p.style.width=p.style.height=size+'px';
+        p.style.backgroundColor='rgba(255,255,255,0.6)';
+        p.style.left=Math.random()*100+'%';
+        p.style.top=Math.random()*100+'%';
+        p.style.opacity=Math.random()*0.5+0.1;
+        p.style.animation=`float ${Math.random()*20+10}s ease-in-out infinite`;
+        p.style.animationDelay=Math.random()*5+'s';
+        p.style.animationDirection='alternate';
+        parent.appendChild(p);
+      }
 
-            function createStar(parent, minSize,maxSize,minDur,maxDur){
-                const s=document.createElement('div');
-                s.className='star';
-                const size=Math.random()*(maxSize-minSize)+minSize;
-                s.style.width=s.style.height=size+'px';
-                s.style.backgroundColor='white';
-                s.style.left=Math.random()*100+'%';
-                s.style.top=Math.random()*100+'%';
-                s.style.opacity=Math.random()*0.5+0.3;
-                s.style.animation=`twinkle ${Math.random()*(maxDur-minDur)+minDur}s ease-in-out infinite`;
-                s.style.animationDelay=Math.random()*5+'s';
-                parent.appendChild(s);
-            }
+      function createShootingStar(){
+        const ss=document.createElement('div');
+        ss.className='shooting-star';
+        ss.style.width='2px';
+        ss.style.height='2px';
+        ss.style.backgroundColor='white';
+        ss.style.left=Math.random()*100+'%';
+        ss.style.top=Math.random()*50+'%';
+        ss.style.opacity=0.8;
+        ss.style.animation='shoot 1.5s linear';
+        document.body.appendChild(ss);
+        setTimeout(()=>{ss.remove();},1500);
+      }
 
-            function createParticle(parent){
-                const p=document.createElement('div');
-                p.className='particle';
-                const size=Math.random()*3+1;
-                p.style.width=p.style.height=size+'px';
-                p.style.backgroundColor='rgba(255,255,255,0.6)';
-                p.style.left=Math.random()*100+'%';
-                p.style.top=Math.random()*100+'%';
-                p.style.opacity=Math.random()*0.5+0.1;
-                p.style.animation=`float ${Math.random()*20+10}s ease-in-out infinite`;
-                p.style.animationDelay=Math.random()*5+'s';
-                p.style.animationDirection='alternate';
-                parent.appendChild(p);
-            }
+      for(let i=0;i<200;i++) createStar(starsDistant,0.5,1,5,10);
+      for(let i=0;i<120;i++) createStar(starsMid,1,2,3,7);
+      for(let i=0;i<80;i++) createStar(starsClose,1.5,3,2,5);
+      for(let i=0;i<30;i++) createParticle(starsClose);
 
-            function createShootingStar(){
-                const ss=document.createElement('div');
-                ss.className='shooting-star';
-                ss.style.width='2px';
-                ss.style.height='2px';
-                ss.style.backgroundColor='white';
-                ss.style.left=Math.random()*100+'%';
-                ss.style.top=Math.random()*50+'%';
-                ss.style.opacity=0.8;
-                ss.style.animation='shoot 1.5s linear';
-                document.body.appendChild(ss);
-                setTimeout(()=>{ss.remove();},1500);
-            }
-
-            for(let i=0;i<300;i++) createStar(starsDistant,0.5,1,5,10);
-            for(let i=0;i<200;i++) createStar(starsMid,1,2,3,7);
-            for(let i=0;i<100;i++) createStar(starsClose,1.5,3,2,5);
-            for(let i=0;i<50;i++) createParticle(starsClose);
-
-            setInterval(()=>{ if(Math.random()>0.7) createShootingStar(); },2000);
-
-            document.addEventListener('mousemove',e=>{
-                const mx=e.clientX/window.innerWidth;
-                const my=e.clientY/window.innerHeight;
-                starsDistant.style.transform=`translateZ(-0.75px) scale(1.75) translate(${mx*-40}px,${my*-40}px)`;
-                starsMid.style.transform=`translateZ(-0.5px) scale(1.5) translate(${mx*-25}px,${my*-25}px)`;
-                starsClose.style.transform=`translateZ(-0.25px) scale(1.25) translate(${mx*-15}px,${my*-15}px)`;
-            });
-        });
-    </script>
+      setInterval(()=>{ if(Math.random()>0.8) createShootingStar(); },2500);
+    });
+  </script>
 
 </body>
 </html>
-
-
-
