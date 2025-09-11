@@ -1,13 +1,13 @@
-#!name=Locket-Gold-US-Full
-#!desc=Fake subscription + route RevenueCat qua Worker US + delete headers
-
-[URL Rewrite]
-^https:\/\/api\.revenuecat\.com\/(.*) https://locket-gold.hungnguyen-junn.workers.dev/$1 307
+#!url=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.sgmodule
+#!name=Locket-Ohoang7_Gold
+#!desc=Crack By Ohoang7
 
 [Script]
-revenuecat = type=http-response,pattern=^https:\/\/locket-gold\.hungnguyen-junn\.workers\.dev\/.+\/(receipts$|subscribers\/[^/]+$),requires-body=true,max-size=-1,script-path=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.js,timeout=60
+# ~ By Vuong2023
+# ～ Egern transfer to Shadowrocket & Surge & LanceX
+revenuecat = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts$|subscribers\/[^/]+$), script-path=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.js, requires-body=true, max-size=-1, timeout=60
 
-deleteHeader = type=http-request,pattern=^https:\/\/locket-gold\.hungnguyen-junn\.workers.dev\/.+\/(receipts|subscribers),script-path=https://raw.githubusercontent.com/junn-dev/locket-gold/main/deleteHeader.js,timeout=60
+deleteHeader = type=http-request, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts|subscribers), script-path=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junnHeader.js, timeout=60
 
 [MITM]
-hostname = %APPEND% api.revenuecat.com,locket-gold.hungnguyen-junn.workers.dev
+hostname = %APPEND% api.revenuecat.com
