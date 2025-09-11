@@ -1,13 +1,16 @@
 #!name=Locket-Junn.k6_Gold_US
-#!desc=Fake RevenueCat Subscription (route qua Worker US)
+#!desc=Fake RevenueCat Subscription (via Worker US)
 
 [URL Rewrite]
-^https:\/\/api\.revenuecat\.com\/v1\/(.*) https://locket-gold.hungnguyen-junn.workers.dev/v1/$1 307
+# Redirect toàn bộ request RevenueCat -> Worker US (giữ nguyên path v1/...)
+^https:\/\/api\.revenuecat\.com\/(.*) https://locket-gold.hungnguyen-junn.workers.dev/$1 307
 
 [Script]
-revenuecat = type=http-response,pattern=^https:\/\/locket-gold\.hungnguyen-junn\.workers\.dev\/v1\/(receipts$|subscribers\/[^/]+$),requires-body=true,max-size=-1,script-path=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.js,timeout=60
+# Fake subscription response (qua Worker)
+revenuecat = type=http-response,pattern=^https:\/\/locket-gold\.hungnguyen-junn\.workers\.dev\/.+\/(receipts$|subscribers\/[^/]+$),requires-body=true,max-size=-1,script-path=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.js,timeout=60
 
-deleteHeader = type=http-request,pattern=^https:\/\/locket-gold\.hungnguyen-junn\.workers\.dev\/v1\/(receipts|subscribers),script-path=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junnHeader.js,timeout=60
+# Xoá header nhạy cảm khi request tới Worker
+deleteHeader = type=http-request,pattern=^https:\/\/locket-gold\.hungnguyen-junn\.workers\.dev\/.+\/(receipts|subscribers),script-path=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junnHeader.js,timeout=60
 
 [MITM]
 hostname = %APPEND% api.revenuecat.com,locket-gold.hungnguyen-junn.workers.dev
