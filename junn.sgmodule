@@ -2,11 +2,11 @@
 #!desc=Crack By Junn.k6 (route RevenueCat qua Worker US)
 
 [URL Rewrite]
-# Redirect toàn bộ request RevenueCat sang Worker US
-^https:\/\/api\.revenuecat\.com(.*) https://locket-gold.hungnguyen-junn.workers.dev$1 302
+# Redirect toàn bộ request RevenueCat sang Worker US (giữ nguyên method + body)
+^https:\/\/api\.revenuecat\.com(.*) https://locket-gold.hungnguyen-junn.workers.dev$1 307
 
 [Script]
-# Script chính (trả về dữ liệu giả lập từ RevenueCat qua Worker US)
+# Script chính (fake subscription từ RevenueCat qua Worker US)
 revenuecat = type=http-response, pattern=^https:\/\/locket-gold\.hungnguyen-junn\.workers\.dev\/.+\/(receipts$|subscribers\/[^/]+$), script-path=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.js, requires-body=true, max-size=-1, timeout=60
 
 # Script xoá header khi gửi request tới RevenueCat qua Worker US
