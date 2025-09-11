@@ -1,10 +1,14 @@
-#!url=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.sgmodule
-#!name=Locket-Junn.k6_Gold
-#!desc=Crack By Junn.k6
+#!name=Locket-Junn.k6_Gold_USProxy
+#!desc=Crack + Route RevenueCat qua Proxy Mỹ
+
+[Proxy]
+US_Proxy = http, pr-na.pyproxy.com, 16666, username=Tuan123a, password=T123468a
+
+[Rule]
+DOMAIN,api.revenuecat.com,US_Proxy
 
 [Script]
-# ~ By Junn.k6
-# ～ Egern transfer to Shadowrocket & Surge & LanceX
+# ~ By Junn.k6 (đã thêm US Proxy)
 revenuecat = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts$|subscribers\/[^/]+$), script-path=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.js, requires-body=true, max-size=-1, timeout=60
 
 deleteHeader = type=http-request, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts|subscribers), script-path=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junnHeader.js, timeout=60
