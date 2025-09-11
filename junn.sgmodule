@@ -1,15 +1,12 @@
-#!name=Locket-Junn.k6_Gold_US
-#!desc=Fake RevenueCat Subscription (via Worker US)
+#!name=Locket-Gold-US
+#!desc=Fake subscription + route RevenueCat qua Worker US
 
 [URL Rewrite]
-# Redirect toàn bộ request RevenueCat -> Worker US (giữ nguyên path v1/...)
 ^https:\/\/api\.revenuecat\.com\/(.*) https://locket-gold.hungnguyen-junn.workers.dev/$1 307
 
 [Script]
-# Fake subscription response (qua Worker)
 revenuecat = type=http-response,pattern=^https:\/\/locket-gold\.hungnguyen-junn\.workers\.dev\/.+\/(receipts$|subscribers\/[^/]+$),requires-body=true,max-size=-1,script-path=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.js,timeout=60
 
-# Xoá header nhạy cảm khi request tới Worker
 deleteHeader = type=http-request,pattern=^https:\/\/locket-gold\.hungnguyen-junn\.workers\.dev\/.+\/(receipts|subscribers),script-path=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junnHeader.js,timeout=60
 
 [MITM]
