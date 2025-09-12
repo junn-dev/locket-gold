@@ -6,7 +6,6 @@
   <title>Cài đặt Locket Gold</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Galaxy background */
     body { margin:0; font-family: 'Montserrat', sans-serif; overflow-x:hidden; }
     .galaxy-background { position:fixed; inset:0; z-index:-1; background:#000; }
     .star, .particle, .shooting-star { position:absolute; border-radius:50%; }
@@ -28,7 +27,7 @@
   <div id="key-container" class="flex justify-center items-center min-h-screen px-4">
     <div class="bg-gradient-to-r from-indigo-900 to-purple-900 p-8 rounded-3xl shadow-2xl w-full max-w-md text-center">
       <h1 class="text-3xl font-bold mb-4">🔑 Nhập Key</h1>
-      <p class="mb-6 text-gray-300">Bạn cần nhập key để tải cấu hình</p>
+      <p class="mb-6 text-gray-300">Bạn cần nhập key để vào phần cài đặt</p>
 
       <input type="text" id="key-input" placeholder="Nhập key..." 
              class="w-full px-4 py-2 rounded-lg text-black mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
@@ -42,7 +41,7 @@
   <div id="main-container" class="hidden flex justify-center items-center min-h-screen px-4">
     <div class="bg-gradient-to-r from-indigo-900 to-purple-900 p-8 rounded-3xl shadow-2xl w-full max-w-md text-center">
       <h1 class="text-3xl font-bold mb-4">🚀 Cài đặt Locket Gold</h1>
-      <p class="mb-6 text-gray-300">Xin chào 👋 Đây là trang cài đặt Locket Gold của Junn.k6! Chúc bạn trải nghiệm vui vẻ!</p>
+      <p class="mb-6 text-gray-300">Xin chào 👋 Đây là trang cài đặt Locket Gold của Junn.k6!</p>
 
       <a href="shadowrocket://install?module=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.sgmodule" 
          class="block w-full bg-green-600 hover:bg-green-700 py-2 rounded-lg font-semibold mb-4 transition">Cài Locket Ngay</a>
@@ -59,7 +58,12 @@ async function verifyKey() {
   const key = document.getElementById("key-input").value.trim();
   const error = document.getElementById("key-error");
   error.classList.add("hidden");
-  if (!key) { error.textContent="Vui lòng nhập key!"; error.classList.remove("hidden"); return; }
+
+  if (!key) { 
+    error.textContent="⚠️ Vui lòng nhập key!"; 
+    error.classList.remove("hidden"); 
+    return; 
+  }
 
   try {
     const resp = await fetch(WORKER_URL + "/verify", {
@@ -68,8 +72,9 @@ async function verifyKey() {
       body:JSON.stringify({key})
     });
     const data = await resp.json().catch(()=>({error:"Server không phản hồi"}));
+
     if (resp.ok && data.ok) {
-      // Hiện phần tải file
+      // Hiện phần cài đặt
       document.getElementById("key-container").classList.add("hidden");
       document.getElementById("main-container").classList.remove("hidden");
     } else {
@@ -82,7 +87,7 @@ async function verifyKey() {
   }
 }
 
-// Tải lại file nếu cần
+// Nút tải về (hiện chỉ thông báo)
 document.getElementById("download-config").addEventListener("click", async ()=>{
   alert("Nút tải về sẽ được triển khai sau, hiện Worker chỉ xác nhận key.");
 });
