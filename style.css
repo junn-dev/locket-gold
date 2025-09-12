@@ -1,89 +1,148 @@
-body, html {
+/* ==================== Body & Fonts ==================== */
+body {
   margin: 0;
-  padding: 0;
   font-family: 'Montserrat', sans-serif;
-  height: 100%;
   overflow-x: hidden;
+  background: #000;
+  color: #fff;
 }
 
+/* ==================== Galaxy Background ==================== */
 .galaxy-background {
   position: fixed;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-  overflow: hidden;
+  inset: 0;
   z-index: -1;
+  background: radial-gradient(ellipse at center, #000000 0%, #0b0b0b 100%);
+  overflow: hidden;
 }
 
-.stars-distant, .stars-mid, .stars-close {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
-
-.star {
+.star, .particle, .shooting-star {
   position: absolute;
   border-radius: 50%;
 }
 
-.particle {
-  position: absolute;
-  border-radius: 50%;
+/* Twinkle animation */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
 }
 
-.shooting-star {
-  position: absolute;
-  border-radius: 50%;
+/* Particle float */
+@keyframes float {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50px); }
 }
 
+/* Shooting star */
+@keyframes shoot {
+  0% { transform: translate(0,0); opacity: 1; }
+  100% { transform: translate(200px,200px); opacity: 0; }
+}
+
+/* ==================== Cosmic Card ==================== */
 .cosmic-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  padding: 1rem;
 }
 
 .cosmic-card {
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(15px);
-  border-radius: 20px;
-  padding: 30px;
+  background: rgba(10, 10, 20, 0.85);
+  backdrop-filter: blur(10px);
+  border-radius: 2rem;
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
   text-align: center;
-  width: 320px;
-  box-shadow: 0 0 30px rgba(0,0,0,0.3);
-  color: #fff;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: transform 0.3s ease;
 }
 
+.cosmic-card:hover {
+  transform: translateY(-5px);
+}
+
+/* ==================== Headings & Text ==================== */
 .cosmic-heading {
   font-family: 'Orbitron', sans-serif;
-  font-size: 24px;
-  margin-bottom: 10px;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #f0f0ff;
 }
 
 .cosmic-text {
-  font-size: 14px;
-  margin-bottom: 20px;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  color: #ccccff;
 }
 
+/* ==================== Inputs ==================== */
 .cosmic-input {
   width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border-radius: 10px;
-  border: none;
-  outline: none;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.2s ease;
 }
 
+.cosmic-input:focus {
+  outline: none;
+  border-color: #7f5af0;
+  box-shadow: 0 0 10px rgba(127,90,240,0.5);
+  background: rgba(255,255,255,0.1);
+}
+
+/* ==================== Buttons ==================== */
 .cosmic-button {
-  padding: 10px 20px;
-  border-radius: 12px;
-  border: none;
-  background: #ff6ec7;
-  color: #fff;
+  display: inline-block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
   font-weight: 600;
+  background: linear-gradient(90deg, #7f5af0, #5a0fc8);
+  color: #fff;
+  border: none;
   cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  margin-top: 0.5rem;
 }
 
 .cosmic-button:hover {
-  background: #ff4ea1;
+  transform: translateY(-2px);
+  background: linear-gradient(90deg, #6e4de0, #470fa0);
+}
+
+/* ==================== Error Messages ==================== */
+#key-error {
+  font-size: 0.9rem;
+  color: #ff6b6b;
+  margin-top: 0.5rem;
+}
+
+/* ==================== Responsive ==================== */
+@media (max-width: 480px) {
+  .cosmic-card {
+    padding: 1.5rem;
+  }
+  .cosmic-heading {
+    font-size: 1.5rem;
+  }
+  .cosmic-text {
+    font-size: 0.9rem;
+  }
+  .cosmic-button {
+    font-size: 0.9rem;
+  }
+  .cosmic-input {
+    font-size: 0.9rem;
+  }
 }
