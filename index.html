@@ -40,12 +40,12 @@
          class="cosmic-button">🚀 Cài Đặt Locket Ngay</a>
       
       <!-- Nút cài cấu hình block api (sẽ tải từ Worker sau khi verify) -->
-      <button id="download-config" class="btn">📥 Tải về Cấu Hình</button>
+      <button id="download-config" class="cosmic-button">📥 Tải về Cấu Hình</button>
     </div>
   </div>
 
   <script>
-    const WORKER_URL = "https://your-worker-name.workers.dev"; // ⚠️ Đổi thành URL Worker của bạn
+    const WORKER_URL = "https://locket-gold.hungnguyen-junn.workers.dev"; // ⚠️ Thay bằng URL Worker của bạn
 
     async function verifyKey() {
       const key = document.getElementById("key-input").value.trim();
@@ -75,9 +75,10 @@
           a.click();
           a.remove();
 
-          // Mở trang chính
+          // Hiện trang chính
           document.getElementById("key-container").style.display = "none";
           document.getElementById("main-container").style.display = "block";
+          error.style.display = "none";
         } else {
           const data = await resp.json().catch(() => ({}));
           error.innerText = data.error || "Key không hợp lệ!";
@@ -89,7 +90,6 @@
       }
     }
 
-    // Nếu muốn user bấm lại "Tải về Cấu Hình" sau này
     document.getElementById("download-config").addEventListener("click", async () => {
       const key = document.getElementById("key-input").value.trim();
       if (!key) return alert("Không tìm thấy key.");
@@ -110,6 +110,63 @@
       } else {
         alert("Key đã hết hạn hoặc không hợp lệ!");
       }
+    });
+
+    // ===================== Stars & Cosmic JS =====================
+    document.addEventListener('DOMContentLoaded', function() {
+      const starsDistant = document.querySelector('.stars-distant');
+      const starsMid = document.querySelector('.stars-mid');
+      const starsClose = document.querySelector('.stars-close');
+
+      function createStar(parent, minSize,maxSize,minDur,maxDur){
+        const s=document.createElement('div');
+        s.className='star';
+        const size=Math.random()*(maxSize-minSize)+minSize;
+        s.style.width=s.style.height=size+'px';
+        s.style.backgroundColor='white';
+        s.style.left=Math.random()*100+'%';
+        s.style.top=Math.random()*100+'%';
+        s.style.opacity=Math.random()*0.5+0.3;
+        s.style.animation=`twinkle ${Math.random()*(maxDur-minDur)+minDur}s ease-in-out infinite`;
+        s.style.animationDelay=Math.random()*5+'s';
+        parent.appendChild(s);
+      }
+
+      function createParticle(parent){
+        const p=document.createElement('div');
+        p.className='particle';
+        const size=Math.random()*3+1;
+        p.style.width=p.style.height=size+'px';
+        p.style.backgroundColor='rgba(255,255,255,0.6)';
+        p.style.left=Math.random()*100+'%';
+        p.style.top=Math.random()*100+'%';
+        p.style.opacity=Math.random()*0.5+0.1;
+        p.style.animation=`float ${Math.random()*20+10}s ease-in-out infinite`;
+        p.style.animationDelay=Math.random()*5+'s';
+        p.style.animationDirection='alternate';
+        parent.appendChild(p);
+      }
+
+      function createShootingStar(){
+        const ss=document.createElement('div');
+        ss.className='shooting-star';
+        ss.style.width='2px';
+        ss.style.height='2px';
+        ss.style.backgroundColor='white';
+        ss.style.left=Math.random()*100+'%';
+        ss.style.top=Math.random()*50+'%';
+        ss.style.opacity=0.8;
+        ss.style.animation='shoot 1.5s linear';
+        document.body.appendChild(ss);
+        setTimeout(()=>{ss.remove();},1500);
+      }
+
+      for(let i=0;i<200;i++) createStar(starsDistant,0.5,1,5,10);
+      for(let i=0;i<120;i++) createStar(starsMid,1,2,3,7);
+      for(let i=0;i<80;i++) createStar(starsClose,1.5,3,2,5);
+      for(let i=0;i<30;i++) createParticle(starsClose);
+
+      setInterval(()=>{ if(Math.random()>0.8) createShootingStar(); },2500);
     });
   </script>
 
