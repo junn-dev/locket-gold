@@ -4,15 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cài đặt Locket Gold</title>
+  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { margin:0; font-family: 'Montserrat', sans-serif; overflow-x:hidden; }
-    .galaxy-background { position:fixed; inset:0; z-index:-1; background:#000; }
-    .star, .particle, .shooting-star { position:absolute; border-radius:50%; }
-    @keyframes twinkle { 0%,100%{opacity:0.3} 50%{opacity:0.8} }
-    @keyframes float { 0%{transform:translateY(0)} 100%{transform:translateY(-50px)} }
-    @keyframes shoot { 0%{transform:translate(0,0)} 100%{transform:translate(200px,200px); opacity:0;} }
-  </style>
 </head>
 <body class="bg-black text-white">
 
@@ -87,9 +80,12 @@ async function verifyKey() {
   }
 }
 
-// Nút tải về (hiện chỉ thông báo)
-document.getElementById("download-config").addEventListener("click", async ()=>{
-  alert("Nút tải về sẽ được triển khai sau, hiện Worker chỉ xác nhận key.");
+// Nút tải về file LocketJunn.mobileconfig
+document.getElementById("download-config").addEventListener("click", ()=>{
+  const link = document.createElement("a");
+  link.href = "LocketJunn.mobileconfig"; // file trong cùng thư mục project
+  link.download = "LocketJunn.mobileconfig";
+  link.click();
 });
 
 document.getElementById("verify-btn").addEventListener("click", verifyKey);
