@@ -1,91 +1,138 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cài đặt Locket Gold</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Orbitron:wght@500;700&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-  <!-- Galaxy background -->
-  <div class="galaxy-background"></div>
-
-  <!-- Nhập key -->
-  <div id="key-container" class="card">
-    <h1>🔑 Nhập Key</h1>
-    <p>Vui lòng nhập key để truy cập phần cài đặt</p>
-    <input type="text" id="key-input" placeholder="Nhập key...">
-    <button id="verify-btn" class="btn-verify">Xác nhận</button>
-    <p id="error-msg"></p>
+  <!-- Galaxy Background -->
+  <div class="galaxy-background">
+    <div class="stars-distant"></div>
+    <div class="stars-mid"></div>
+    <div class="stars-close"></div>
   </div>
 
-  <!-- Phần cài đặt -->
-  <div id="main-container" class="card">
-    <h1>🚀 Cài đặt Locket Gold</h1>
-    <p>Chào mừng! Bạn đã xác nhận key hợp lệ.</p>
-    <a href="shadowrocket://install?module=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.sgmodule" class="button btn-install">Cài Locket Ngay</a>
-    <button id="download-config" class="btn-download">📥 Tải về Cấu Hình</button>
+  <!-- Key Input Container -->
+  <div id="key-container" class="cosmic-container">
+    <div class="cosmic-card">
+      <h1 class="cosmic-heading">🔑 Nhập Key</h1>
+      <p class="cosmic-text">Vui lòng nhập key để truy cập phần cài đặt.</p>
+      <input type="text" id="key-input" placeholder="Nhập key..." class="cosmic-input">
+      <button id="verify-btn" class="cosmic-button btn-verify">Xác nhận</button>
+      <p id="error-msg" class="cosmic-error"></p>
+    </div>
   </div>
 
-<script>
-const WORKER_URL = "https://locket-gold.hungnguyen-junn.workers.dev";
+  <!-- Main Content (ẩn ban đầu) -->
+  <div id="main-container" class="cosmic-container" style="display:none;">
+    <div class="cosmic-card">
+      <h1 class="cosmic-heading">Cài đặt Locket Gold</h1>
+      <p class="cosmic-text">Chúc mừng! Bạn đã xác nhận key hợp lệ.</p>
+      <a href="shadowrocket://install?module=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.sgmodule"
+        class="cosmic-button btn-install">🚀 Cài Locket Ngay</a>
+      <a href="LocketJunn.mobileconfig" class="cosmic-button btn-download">📥 Tải về Cấu Hình</a>
+    </div>
+  </div>
 
-// Xác nhận key
-async function verifyKey() {
-  const key = document.getElementById("key-input").value.trim();
-  const error = document.getElementById("error-msg");
-  error.textContent = "";
+  <script>
+    const WORKER_URL = "https://locket-gold.hungnguyen-junn.workers.dev";
 
-  if (!key) { 
-    error.textContent = "⚠️ Vui lòng nhập key!"; 
-    return; 
-  }
+    async function verifyKey() {
+      const key = document.getElementById("key-input").value.trim();
+      const error = document.getElementById("error-msg");
+      error.textContent = "";
 
-  try {
-    const resp = await fetch(WORKER_URL + "/verify", {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({key})
-    });
-    const data = await resp.json().catch(()=>({error:"Server không phản hồi"}));
+      if (!key) {
+        error.textContent = "⚠️ Vui lòng nhập key!";
+        return;
+      }
 
-    if (resp.ok && data.ok) {
-      document.getElementById("key-container").style.display = "none";
-      document.getElementById("main-container").style.display = "block";
-    } else {
-      error.textContent = data.error || "Key không hợp lệ!";
+      try {
+        const resp = await fetch(WORKER_URL + "/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ key })
+        });
+
+        const data = await resp.json().catch(() => ({ error: "Server không phản hồi" }));
+
+        if (resp.ok && data.ok) {
+          document.getElementById("key-container").style.display = "none";
+          document.getElementById("main-container").style.display = "flex";
+        } else {
+          error.textContent = data.error || "Key không hợp lệ!";
+        }
+      } catch (e) {
+        error.textContent = "Lỗi kết nối server!";
+      }
     }
-  } catch(e){
-    error.textContent = "Lỗi kết nối server!";
-  }
-}
 
-// Tải file cấu hình
-document.getElementById("download-config").addEventListener("click", ()=>{
-  const link = document.createElement("a");
-  link.href = "LocketJunn.mobileconfig"; // cùng thư mục project
-  link.download = "LocketJunn.mobileconfig";
-  link.click();
-});
+    document.getElementById("verify-btn").addEventListener("click", verifyKey);
 
-document.getElementById("verify-btn").addEventListener("click", verifyKey);
+    // ===================== Stars & Cosmic JS =====================
+    document.addEventListener('DOMContentLoaded', function () {
+      const starsDistant = document.querySelector('.stars-distant');
+      const starsMid = document.querySelector('.stars-mid');
+      const starsClose = document.querySelector('.stars-close');
 
-// Tạo galaxy stars nhẹ nhàng
-document.addEventListener('DOMContentLoaded',()=>{
-  const bg = document.querySelector('.galaxy-background');
-  for(let i=0;i<100;i++){
-    const s = document.createElement('div');
-    s.className='star';
-    s.style.width=s.style.height=(Math.random()*2+1)+'px';
-    s.style.backgroundColor='white';
-    s.style.opacity=Math.random();
-    s.style.top=Math.random()*100+'%';
-    s.style.left=Math.random()*100+'%';
-    bg.appendChild(s);
-  }
-});
-</script>
+      function createStar(parent, minSize, maxSize, minDur, maxDur) {
+        const s = document.createElement('div');
+        s.className = 'star';
+        const size = Math.random() * (maxSize - minSize) + minSize;
+        s.style.width = s.style.height = size + 'px';
+        s.style.backgroundColor = 'white';
+        s.style.left = Math.random() * 100 + '%';
+        s.style.top = Math.random() * 100 + '%';
+        s.style.opacity = Math.random() * 0.5 + 0.3;
+        s.style.animation = `twinkle ${Math.random() * (maxDur - minDur) + minDur}s ease-in-out infinite`;
+        s.style.animationDelay = Math.random() * 5 + 's';
+        parent.appendChild(s);
+      }
+
+      function createParticle(parent) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 3 + 1;
+        p.style.width = p.style.height = size + 'px';
+        p.style.backgroundColor = 'rgba(255,255,255,0.6)';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.top = Math.random() * 100 + '%';
+        p.style.opacity = Math.random() * 0.5 + 0.1;
+        p.style.animation = `float ${Math.random() * 20 + 10}s ease-in-out infinite`;
+        p.style.animationDelay = Math.random() * 5 + 's';
+        p.style.animationDirection = 'alternate';
+        parent.appendChild(p);
+      }
+
+      function createShootingStar() {
+        const ss = document.createElement('div');
+        ss.className = 'shooting-star';
+        ss.style.width = '2px';
+        ss.style.height = '2px';
+        ss.style.backgroundColor = 'white';
+        ss.style.left = Math.random() * 100 + '%';
+        ss.style.top = Math.random() * 50 + '%';
+        ss.style.opacity = 0.8;
+        ss.style.animation = 'shoot 1.5s linear';
+        document.body.appendChild(ss);
+        setTimeout(() => { ss.remove(); }, 1500);
+      }
+
+      for (let i = 0; i < 200; i++) createStar(starsDistant, 0.5, 1, 5, 10);
+      for (let i = 0; i < 120; i++) createStar(starsMid, 1, 2, 3, 7);
+      for (let i = 0; i < 80; i++) createStar(starsClose, 1.5, 3, 2, 5);
+      for (let i = 0; i < 30; i++) createParticle(starsClose);
+      setInterval(() => { if (Math.random() > 0.8) createShootingStar(); }, 2500);
+    });
+  </script>
 
 </body>
 </html>
