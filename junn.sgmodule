@@ -1,16 +1,6 @@
-# Shadowrocket Config - Cập nhật: 2025-03-22
-# Bản Quyền Thuộc Về Junn.k6
-# Nhóm Telegram: https://t.me/shadowrocketunlockproapps
-
 #!url=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.sgmodule
 #!name=Locket-Junn.k6_Gold
-#!desc=Crack By Junn.k7
-
-# Metadata thêm (Spotify Plus)
-#!name=Spotify Plus
-#!desc=Mở khóa một phần tính năng Premium. Khuyến nghị đăng nhập lại sau khi cài đặt. Không hỗ trợ chất lượng âm thanh cao cấp.
-# 💬 Discord: https://discord.gg/juY9tw5AJY  
-# 🚀 Released by: Nightmarket Server  
+#!desc=Crack By Junn.k6
 
 [General]
 private-ip-answer = true
@@ -21,7 +11,7 @@ dns-server = 94.140.14.14, 94.140.15.15
 fallback-dns-server = 76.76.2.0, 76.76.10.0
 skip-proxy = 192.168.0.0/16, 10.0.0.0/8, 172.16.0.0/12, localhost, *.local, captive.apple.com
 tun-excluded-routes = 10.0.0.0/8, 100.64.0.0/10, 127.0.0.0/8, 169.254.0.0/16, 172.16.0.0/12, 192.0.0.0/24, 192.0.2.0/24, 192.88.99.0/24, 192.168.0.0/16, 198.51.100.0/24, 203.0.113.0/24, 224.0.0.0/4, 255.255.255.255/32, 239.255.255.250/32
-update-url = https://raw.githubusercontent.com/quocchienn/YouTubePIP/refs/heads/YouTube%2B%2B/YouTubefix2.conf
+update-url = https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.sgmodule
 
 [Rule]
 RULE-SET,https://raw.githubusercontent.com/bigdargon/hostsVN/master/option/hostsVN-surge-rule.conf,REJECT
