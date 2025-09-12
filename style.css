@@ -1,96 +1,169 @@
-/* Reset cơ bản */
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* ================== Reset ================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-/* Body & background galaxy */
 body {
   font-family: 'Montserrat', sans-serif;
+  background: radial-gradient(ellipse at bottom, #0d1a2d, #000);
+  color: #fff;
+  overflow: hidden;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-  color: #fff;
-  overflow-x: hidden;
 }
 
-/* Galaxy & stars */
+/* ================== Galaxy Background ================== */
 .galaxy-background {
   position: fixed;
-  inset: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
+  overflow: hidden;
   z-index: -1;
-  background: #000;
 }
-
+.stars-distant, .stars-mid, .stars-close {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
 .star, .particle, .shooting-star {
   position: absolute;
   border-radius: 50%;
 }
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+@keyframes float {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50px); }
+}
+@keyframes shoot {
+  0% { transform: translateX(0) translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateX(300px) translateY(200px) scale(0.5); opacity: 0; }
+}
 
-/* Card chính */
-.card {
-  background: rgba(15, 32, 39, 0.95);
-  padding: 2rem;
-  border-radius: 2rem;
-  max-width: 400px;
-  width: 100%;
+/* ================== Main Container ================== */
+.cosmic-container {
   text-align: center;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+  padding: 20px;
+  max-width: 500px;
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.cosmic-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 30px 25px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+}
+.cosmic-heading {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  color: #00f5ff;
+  text-shadow: 0 0 10px rgba(0,245,255,0.7);
+}
+.cosmic-text {
+  font-size: 1rem;
+  line-height: 1.5;
+  margin-bottom: 25px;
+  color: #cfd8dc;
 }
 
-/* Tiêu đề */
-.card h1 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
-
-/* Input */
-.card input {
-  width: 100%;
-  padding: 0.75rem;
-  border-radius: 0.75rem;
+/* ================== Input Field ================== */
+.cosmic-input {
+  width: 90%;
+  max-width: 280px;
+  padding: 12px 15px;
+  border-radius: 10px;
   border: none;
-  margin-bottom: 1rem;
   font-size: 1rem;
+  margin-bottom: 15px;
   outline: none;
-}
-
-/* Button */
-.card button, .card a.button {
-  display: block;
-  width: 100%;
-  padding: 0.75rem;
-  border-radius: 0.75rem;
-  font-weight: 600;
-  font-size: 1rem;
-  margin-bottom: 1rem;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-decoration: none;
+  background: rgba(255,255,255,0.1);
   color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 198, 255, 0.4);
+  transition: all 0.3s ease;
+  text-align: center;
+}
+.cosmic-input::placeholder {
+  color: rgba(255,255,255,0.6);
+}
+.cosmic-input:focus {
+  background: rgba(0,198,255,0.1);
+  box-shadow: 0 0 15px rgba(0,198,255,0.8);
+  color: #00f5ff;
 }
 
-/* Các màu button */
-.btn-verify { background: #4f46e5; }
-.btn-verify:hover { background: #4338ca; }
+/* ================== Buttons ================== */
+.cosmic-button, .btn {
+  display: block;
+  margin: 12px auto;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  width: 90%;
+  max-width: 280px;
+  text-align: center;
+}
+.cosmic-button {
+  background: linear-gradient(90deg, #00c6ff, #0072ff);
+  color: white;
+  box-shadow: 0 0 12px rgba(0, 198, 255, 0.6);
+}
+.cosmic-button:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 20px rgba(0, 198, 255, 0.9);
+}
+.btn {
+  background: linear-gradient(90deg, #ff8c00, #ff2d55);
+  color: white;
+  box-shadow: 0 0 12px rgba(255, 45, 85, 0.6);
+}
+.btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 20px rgba(255, 45, 85, 0.9);
+}
 
-.btn-install { background: #16a34a; }
-.btn-install:hover { background: #15803d; }
+/* Verify Button (key input) */
+.btn-verify {
+  background: linear-gradient(90deg, #00ffae, #00c3ff);
+  box-shadow: 0 0 12px rgba(0, 255, 174, 0.6);
+}
+.btn-verify:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 20px rgba(0, 255, 174, 0.9);
+}
 
-.btn-download { background: #f59e0b; color: #000; }
-.btn-download:hover { background: #d97706; }
-
-/* Thông báo lỗi */
-#error-msg {
-  color: #f87171;
+/* ================== Error Message ================== */
+.cosmic-error {
+  margin-top: 10px;
+  color: #ff3860;
+  font-weight: 600;
   font-size: 0.9rem;
-  margin-top: 0.5rem;
+  min-height: 1.2em; /* giữ chỗ khi chưa có lỗi */
 }
 
-/* Ẩn phần chính trước khi verify key */
-#main-container { display: none; }
-
-/* Responsive */
-@media(max-width: 480px){
-  .card { padding: 1.5rem; border-radius: 1.5rem; }
-  .card h1 { font-size: 1.5rem; }
+/* ================== Responsive ================== */
+@media (max-width: 480px) {
+  .cosmic-heading {
+    font-size: 1.4rem;
+  }
+  .cosmic-text {
+    font-size: 0.9rem;
+  }
+  .cosmic-card {
+    padding: 20px 15px;
+  }
+  .cosmic-input, .cosmic-button, .btn {
+    width: 95%;
+  }
 }
