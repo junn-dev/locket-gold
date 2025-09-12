@@ -1,26 +1,96 @@
-/* Galaxy background */
-body { 
-  margin:0; 
-  font-family: 'Montserrat', sans-serif; 
-  overflow-x:hidden; 
+/* Reset cơ bản */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Body & background galaxy */
+body {
+  font-family: 'Montserrat', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  color: #fff;
+  overflow-x: hidden;
 }
 
-.galaxy-background { 
-  position:fixed; inset:0; z-index:-1; background:#000; 
+/* Galaxy & stars */
+.galaxy-background {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: #000;
 }
 
-.star, .particle, .shooting-star { 
-  position:absolute; border-radius:50%; 
+.star, .particle, .shooting-star {
+  position: absolute;
+  border-radius: 50%;
 }
 
-@keyframes twinkle { 
-  0%,100%{opacity:0.3} 50%{opacity:0.8} 
+/* Card chính */
+.card {
+  background: rgba(15, 32, 39, 0.95);
+  padding: 2rem;
+  border-radius: 2rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
 }
 
-@keyframes float { 
-  0%{transform:translateY(0)} 100%{transform:translateY(-50px)} 
+/* Tiêu đề */
+.card h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
 }
 
-@keyframes shoot { 
-  0%{transform:translate(0,0)} 100%{transform:translate(200px,200px); opacity:0;} 
+/* Input */
+.card input {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  border: none;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  outline: none;
+}
+
+/* Button */
+.card button, .card a.button {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  color: #fff;
+}
+
+/* Các màu button */
+.btn-verify { background: #4f46e5; }
+.btn-verify:hover { background: #4338ca; }
+
+.btn-install { background: #16a34a; }
+.btn-install:hover { background: #15803d; }
+
+.btn-download { background: #f59e0b; color: #000; }
+.btn-download:hover { background: #d97706; }
+
+/* Thông báo lỗi */
+#error-msg {
+  color: #f87171;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+/* Ẩn phần chính trước khi verify key */
+#main-container { display: none; }
+
+/* Responsive */
+@media(max-width: 480px){
+  .card { padding: 1.5rem; border-radius: 1.5rem; }
+  .card h1 { font-size: 1.5rem; }
 }
