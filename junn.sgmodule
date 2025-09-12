@@ -1,14 +1,40 @@
 #!url=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.sgmodule
-#!name=Locket-Junn.k6_Gold
-#!desc=Crack By Junn.k7
+#!name=Premium-Junn.k6_Gold
+#!desc=Crack By Junn.k6
+
+[Rule]
+# YouTube adblock & VN hosts
+RULE-SET,https://raw.githubusercontent.com/bigdargon/hostsVN/master/option/hostsVN-surge-rule.conf,REJECT
+RULE-SET,https://raw.githubusercontent.com/bigdargon/hostsVN/master/option/hostsVN-surge-exceptions-rule.conf,DIRECT
+DOMAIN-SUFFIX,googlevideo.com,DIRECT
+DOMAIN-SUFFIX,youtubei.googleapis.com,DIRECT
+FINAL,DIRECT
+
+[URL Rewrite]
+^https?:\/\/[\w-]+\.googlevideo\.com\/initplayback.+&oad _ REJECT-IMG
+https?:\/\/.+\.googlevideo\.com\/ptracking\?pltype=adhost reject header
+https?:\/\/.+\.youtube\.com\/api\/stats\/.+adformat reject header
+https?:\/\/m\.youtube\.com\/_get_ads reject header
+https?:\/\/pagead2\.googlesyndication\.com\/pagead\/ reject header
+https?:\/\/s\.youtube\.com\/api\/stats\/watchtime?adformat reject header
+https?:\/\/youtubei\.googleapis\.com/.+ad_break reject header
+
+[Header Rewrite]
+# Spotify: xóa if-none-match tránh 304
+http-request ^https:\/\/(spclient\.wg\.spotify\.com|.*-spclient\.spotify\.com(:443)?)\/user-customization-service\/v1\/customize$ header-del if-none-match
 
 [Script]
-# ~ By Junn
-# ～ Egern transfer to Shadowrocket & Surge & LanceX
-revenuecat = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts$|subscribers\/[^/]+$), script-path=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.js, requires-body=true, max-size=-1, timeout=60
+# YouTube response script
+youtube.response = type=http-response, pattern=^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(browse|next|player|search|reel\/reel_watch_sequence|guide|account\/get_setting|get_watch), requires-body=1, max-size=-1, binary-body-mode=1, script-path=https://raw.githubusercontent.com/Maasea/sgmodule/refs/heads/master/Script/Youtube/youtube.response.js, argument="{\"lyricLang\":\"{{null}}\",\"captionLang\":\"{{{null}}}\",\"blockUpload\":{{{true}}},\"blockImmersive\":{{{true}}},\"debug\":{{{false}}}}"
 
+# Junn.k6 (Revenuecat)
+revenuecat = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts$|subscribers\/[^/]+$), script-path=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.js, requires-body=true, max-size=-1, timeout=60
 deleteHeader = type=http-request, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts|subscribers), script-path=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junnHeader.js, timeout=60
 
-[MITM]
-hostname = %APPEND% api.revenuecat.com
+# Spotify Plus
+spotify-json = type=http-request, pattern=^https:\/\/(spclient\.wg\.spotify\.com|.*-spclient\.spotify\.com(:443)?)\/(artistview\/v1\/artist|album-entity-view\/v2\/album)\/, requires-body=0, script-path=https://raw.githubusercontent.com/app2smile/rules/master/js/spotify-json.js
+spotify-proto = type=http-response, pattern=^https:\/\/(spclient\.wg\.spotify\.com|.*-spclient\.spotify\.com(:443)?)\/(bootstrap\/v1\/bootstrap|user-customization-service\/v1\/customize)$, requires-body=1, binary-body-mode=1, max-size=0, script-path=https://raw.githubusercontent.com/app2smile/rules/master/js/spotify-proto.js, script-update-interval=0
 
+[MITM]
+hostname = %APPEND% *.googlevideo.com, youtubei.googleapis.com, api.revenuecat.com, spclient.wg.spotify.com, *spclient.spotify.com
+enable = true
