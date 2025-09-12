@@ -4,10 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cài đặt Locket Gold</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Galaxy background */
+    body { margin:0; font-family: 'Montserrat', sans-serif; overflow-x:hidden; }
+    .galaxy-background { position:fixed; inset:0; z-index:-1; background:#000; }
+    .star, .particle, .shooting-star { position:absolute; border-radius:50%; }
+    @keyframes twinkle { 0%,100%{opacity:0.3} 50%{opacity:0.8} }
+    @keyframes float { 0%{transform:translateY(0)} 100%{transform:translateY(-50px)} }
+    @keyframes shoot { 0%{transform:translate(0,0)} 100%{transform:translate(200px,200px); opacity:0;} }
+  </style>
 </head>
-<body>
+<body class="bg-black text-white">
 
   <!-- Galaxy Background -->
   <div class="galaxy-background">
@@ -17,121 +25,82 @@
   </div>
 
   <!-- Container nhập key -->
-  <div class="cosmic-container" id="key-container">
-    <div class="cosmic-card">
-      <h1 class="cosmic-heading">Nhập Key</h1>
-      <p class="cosmic-text">Bạn cần nhập key để tải cấu hình 📥</p>
+  <div id="key-container" class="flex justify-center items-center min-h-screen px-4">
+    <div class="bg-gradient-to-r from-indigo-900 to-purple-900 p-8 rounded-3xl shadow-2xl w-full max-w-md text-center">
+      <h1 class="text-3xl font-bold mb-4">🔑 Nhập Key</h1>
+      <p class="mb-6 text-gray-300">Bạn cần nhập key để tải cấu hình</p>
 
-      <input type="text" id="key-input" placeholder="Nhập key..." class="cosmic-input"/>
-      <button id="verify-btn" class="cosmic-button">🔑 Xác nhận</button>
+      <input type="text" id="key-input" placeholder="Nhập key..." 
+             class="w-full px-4 py-2 rounded-lg text-black mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"/>
+      <button id="verify-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 py-2 rounded-lg font-semibold transition">Xác nhận</button>
 
-      <p id="key-error" style="color:#ff8080; display:none; margin-top:10px;"></p>
+      <p id="key-error" class="mt-4 text-red-400 hidden"></p>
     </div>
   </div>
 
-  <!-- Nội dung chính (ẩn ban đầu) -->
-  <div class="cosmic-container" id="main-container" style="display:none;">
-    <div class="cosmic-card">
-      <h1 class="cosmic-heading">Cài đặt Locket Gold</h1>
-      <p class="cosmic-text">Xin chào 👋 Đây là trang cài đặt Locket Gold của Junn.k6! Chúc bạn trải nghiệm vui vẻ!</p>
+  <!-- Nội dung chính -->
+  <div id="main-container" class="hidden flex justify-center items-center min-h-screen px-4">
+    <div class="bg-gradient-to-r from-indigo-900 to-purple-900 p-8 rounded-3xl shadow-2xl w-full max-w-md text-center">
+      <h1 class="text-3xl font-bold mb-4">🚀 Cài đặt Locket Gold</h1>
+      <p class="mb-6 text-gray-300">Xin chào 👋 Đây là trang cài đặt Locket Gold của Junn.k6! Chúc bạn trải nghiệm vui vẻ!</p>
 
       <a href="shadowrocket://install?module=https://raw.githubusercontent.com/junn-dev/locket-gold/main/junn.sgmodule" 
-         class="cosmic-button">🚀 Cài Đặt Locket Ngay</a>
+         class="block w-full bg-green-600 hover:bg-green-700 py-2 rounded-lg font-semibold mb-4 transition">Cài Locket Ngay</a>
       
-      <button id="download-config" class="cosmic-button">📥 Tải về Cấu Hình</button>
+      <button id="download-config" class="w-full bg-yellow-500 hover:bg-yellow-600 py-2 rounded-lg font-semibold transition">📥 Tải về Cấu Hình</button>
     </div>
   </div>
 
 <script>
-const WORKER_URL = "https://locket-gold.hungnguyen-junn.workers.dev"; // URL Worker thật
+const WORKER_URL = "https://locket-gold.hungnguyen-junn.workers.dev";
 
+// Xác nhận key
 async function verifyKey() {
   const key = document.getElementById("key-input").value.trim();
   const error = document.getElementById("key-error");
-
-  error.style.display = "none";
-  if (!key) {
-    error.innerText = "Vui lòng nhập key!";
-    error.style.display = "block";
-    return;
-  }
+  error.classList.add("hidden");
+  if (!key) { error.textContent="Vui lòng nhập key!"; error.classList.remove("hidden"); return; }
 
   try {
     const resp = await fetch(WORKER_URL + "/verify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ key })
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({key})
     });
-
-    if (resp.ok && resp.headers.get("Content-Type")?.includes("application/x-apple-aspen-config")) {
-      // Key hợp lệ → tải file ngay
-      const blob = await resp.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "LocketJunn.mobileconfig";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-
-      // Hiện trang chính và ẩn container nhập key
-      document.getElementById("key-container").style.display = "none";
-      document.getElementById("main-container").style.display = "block";
+    const data = await resp.json().catch(()=>({error:"Server không phản hồi"}));
+    if (resp.ok && data.ok) {
+      // Hiện phần tải file
+      document.getElementById("key-container").classList.add("hidden");
+      document.getElementById("main-container").classList.remove("hidden");
     } else {
-      const data = await resp.json().catch(() => ({}));
-      error.innerText = data.error || "Key không hợp lệ!";
-      error.style.display = "block";
+      error.textContent = data.error || "Key không hợp lệ!";
+      error.classList.remove("hidden");
     }
-  } catch(e) {
-    error.innerText = "Lỗi kết nối server!";
-    error.style.display = "block";
+  } catch(e){
+    error.textContent = "Lỗi kết nối server!";
+    error.classList.remove("hidden");
   }
 }
 
-// Cho phép tải lại file nếu user muốn
-document.getElementById("download-config").addEventListener("click", async () => {
-  const key = document.getElementById("key-input").value.trim();
-  if (!key) return alert("Không tìm thấy key.");
-  try {
-    const resp = await fetch(WORKER_URL + "/verify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ key })
-    });
-    if (resp.ok && resp.headers.get("Content-Type")?.includes("application/x-apple-aspen-config")) {
-      const blob = await resp.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "LocketJunn.mobileconfig";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    } else {
-      alert("Key đã hết hạn hoặc không hợp lệ!");
-    }
-  } catch(e) {
-    alert("Lỗi kết nối server!");
-  }
+// Tải lại file nếu cần
+document.getElementById("download-config").addEventListener("click", async ()=>{
+  alert("Nút tải về sẽ được triển khai sau, hiện Worker chỉ xác nhận key.");
 });
 
 document.getElementById("verify-btn").addEventListener("click", verifyKey);
 
-// ===================== Stars & Cosmic JS =====================
-// (giữ nguyên code star/particle/shooting star)
-document.addEventListener('DOMContentLoaded', function() {
+// ===================== Stars & Particles =====================
+document.addEventListener('DOMContentLoaded',()=>{
   const starsDistant = document.querySelector('.stars-distant');
   const starsMid = document.querySelector('.stars-mid');
   const starsClose = document.querySelector('.stars-close');
 
-  function createStar(parent, minSize,maxSize,minDur,maxDur){
-    const s=document.createElement('div');
-    s.className='star';
+  function createStar(parent,minSize,maxSize,minDur,maxDur){
+    const s=document.createElement('div'); s.className='star';
     const size=Math.random()*(maxSize-minSize)+minSize;
     s.style.width=s.style.height=size+'px';
     s.style.backgroundColor='white';
-    s.style.left=Math.random()*100+'%';
-    s.style.top=Math.random()*100+'%';
+    s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%';
     s.style.opacity=Math.random()*0.5+0.3;
     s.style.animation=`twinkle ${Math.random()*(maxDur-minDur)+minDur}s ease-in-out infinite`;
     s.style.animationDelay=Math.random()*5+'s';
@@ -139,13 +108,10 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function createParticle(parent){
-    const p=document.createElement('div');
-    p.className='particle';
-    const size=Math.random()*3+1;
-    p.style.width=p.style.height=size+'px';
+    const p=document.createElement('div'); p.className='particle';
+    const size=Math.random()*3+1; p.style.width=p.style.height=size+'px';
     p.style.backgroundColor='rgba(255,255,255,0.6)';
-    p.style.left=Math.random()*100+'%';
-    p.style.top=Math.random()*100+'%';
+    p.style.left=Math.random()*100+'%'; p.style.top=Math.random()*100+'%';
     p.style.opacity=Math.random()*0.5+0.1;
     p.style.animation=`float ${Math.random()*20+10}s ease-in-out infinite`;
     p.style.animationDelay=Math.random()*5+'s';
@@ -154,24 +120,17 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function createShootingStar(){
-    const ss=document.createElement('div');
-    ss.className='shooting-star';
-    ss.style.width='2px';
-    ss.style.height='2px';
-    ss.style.backgroundColor='white';
-    ss.style.left=Math.random()*100+'%';
-    ss.style.top=Math.random()*50+'%';
-    ss.style.opacity=0.8;
-    ss.style.animation='shoot 1.5s linear';
-    document.body.appendChild(ss);
-    setTimeout(()=>{ss.remove();},1500);
+    const ss=document.createElement('div'); ss.className='shooting-star';
+    ss.style.width='2px'; ss.style.height='2px'; ss.style.backgroundColor='white';
+    ss.style.left=Math.random()*100+'%'; ss.style.top=Math.random()*50+'%';
+    ss.style.opacity=0.8; ss.style.animation='shoot 1.5s linear';
+    document.body.appendChild(ss); setTimeout(()=>ss.remove(),1500);
   }
 
   for(let i=0;i<200;i++) createStar(starsDistant,0.5,1,5,10);
   for(let i=0;i<120;i++) createStar(starsMid,1,2,3,7);
   for(let i=0;i<80;i++) createStar(starsClose,1.5,3,2,5);
   for(let i=0;i<30;i++) createParticle(starsClose);
-
   setInterval(()=>{ if(Math.random()>0.8) createShootingStar(); },2500);
 });
 </script>
