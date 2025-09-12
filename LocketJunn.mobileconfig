@@ -11,11 +11,11 @@
         <key>DNSProtocol</key>
         <string>TLS</string>
         <key>ServerName</key>
-        <string>682e99.dns.nextdns.io</string>
+        <string>58c9fa.dns.nextdns.io</string>
         <key>ServerAddresses</key>
         <array>
-          <string>45.90.28.63</string>
-          <string>45.90.30.63</string>
+          <string>45.90.28.35</string>
+          <string>45.90.28.35</string>
         </array>
       </dict>
       <key>PayloadDescription</key>
