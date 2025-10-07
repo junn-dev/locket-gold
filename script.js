@@ -56,11 +56,11 @@ async function upgradeLocketGold() {
 
   // Tạo QR dựa trên email trước @
   const substr = currentUser.localId ? currentUser.localId.slice(0, 10) : "locket";
-  const qrUrl = `https://vietqr.co/api/generate/mb/09999999900/NGUYEN%20VAN%20HUNG/30000/${substr}?isMask=0&logo=1&style=2&bg=61`;
+  const qrUrl = `https://vietqr.co/api/generate/mb/09999999900/NGUYEN%20VAN%20HUNG/10000/${substr}?isMask=0&logo=1&style=2&bg=61`;
 
   qrContainer.style.display = "block";
   qrContainer.innerHTML = `
-    <p>Quét QR để thanh toán <b>30.000 VND</b></p>
+    <p>Quét QR để thanh toán <b>10.000 VND</b></p>
     <img src="${qrUrl}" alt="QR Thanh toán">
   `;
 
@@ -77,7 +77,7 @@ async function upgradeLocketGold() {
           action: "check_tx",
           localId: currentUser.localId,
           email: currentUser.email,
-          amount: 30000
+          amount: 10000
         })
       });
       const data = await res.json();
