@@ -7,27 +7,94 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Galaxy background -->
   <div class="stars"></div>
-  <div class="stars2"></div>
-  <div class="stars3"></div>
 
   <div class="container fade-in">
-    <!-- Login form -->
-    <div class="card" id="login-card">
+
+    <!-- VISUAL GUIDE -->
+    <div class="visual-guide">
+      <h3>📸 Hướng dẫn trực quan Locket VIP</h3>
+      <p style="text-align:center;">Tham khảo từng bước qua hình ảnh</p>
+
+      <div class="guide-content">
+          <!-- 13 steps -->
+        <div class="guide-step active">
+          <img src="b1.jpg" alt="Bước 1">
+          <p><b>Cài đặt</b> → <b>Cài đặt chung</b> (kéo xuống dưới cùng) → <b>Quản lý VPN & thiết bị</b></p>
+          <p>Xóa hết cấu hình cũ.</p>
+        </div>
+        <div class="guide-step">
+          <img src="b2.jpg" alt="Bước 2">
+          <p>Như thế này là OK! Qua bước tiếp theo.</p>
+        </div>
+        <div class="guide-step">
+          <img src="b3.jpg" alt="Bước 3">
+          <p>Đăng nhập tài khoản Locket của bạn vào web, nhấn <b>✨ Lên Locket Gold ngay 🎉</b>, quét QR thanh toán (1 lần duy nhất) và qua bước tiếp theo.</p>
+        </div>
+        <div class="guide-step">
+          <img src="b4.jpg" alt="Bước 4">
+          <p>Sau khi thanh toán thành công, vào app Locket kiểm tra xem đã lên Gold chưa (thoát app và vào lại). Như trên hình là OK! Qua bước tiếp theo.</p>
+        </div>
+        <div class="guide-step">
+          <img src="b5.jpg" alt="Bước 5">
+          <p>Sau khi đã lên Gold, quay lại web <b>📥 Tải về Cấu Hình</b>.</p>
+        </div>
+        <div class="guide-step">
+          <img src="b6.jpg" alt="Bước 6">
+          <p><b>Cho phép</b> cài đặt cấu hình.</p>
+        </div>
+        <div class="guide-step">
+          <img src="b7.jpg" alt="Bước 7">
+          <p><b>Đóng</b> cửa sổ thông báo.</p>
+        </div>
+        <div class="guide-step">
+          <img src="b8.jpg" alt="Bước 8">
+          <p><b>Cài đặt</b> → <b>Cài đặt chung</b> → <b>Quản lý VPN & thiết bị</b></p>
+        </div>
+        <div class="guide-step">
+          <img src="b9.jpg" alt="Bước 9">
+          <p>Chọn cấu hình mới tải về.</p>
+        </div>
+        <div class="guide-step">
+          <img src="b10.jpg" alt="Bước 10">
+          <p>Xác nhận cài đặt cấu hình.</p>
+        </div>
+        <div class="guide-step">
+          <img src="b11.jpg" alt="Bước 11">
+          <p>Xác nhận cài đặt cấu hình.</p>
+        </div>
+        <div class="guide-step">
+          <img src="b12.jpg" alt="Bước 12">
+          <p>Như thế là OK!</p>
+        </div>
+        <div class="guide-step">
+          <img src="b13.jpg" alt="Bước 13">
+          <p>Nếu mất Gold, chuyển DNS về <b>Tự động</b>, đăng nhập lại web và lên lại. Sau khi cài xong, chỉnh DNS về <b>LocketGold Junn</b>. Hoàn tất!</p>
+        </div>
+      </div>
+
+      <div class="guide-nav">
+        <button id="prev-step">⏮</button>
+        <button id="next-step">⏭</button>
+      </div>
+      <button id="skip-btn">⏩ Bỏ qua hướng dẫn</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="card" id="login-card" style="display:none;">
       <h2>Đăng nhập</h2>
       <p class="sub-title">Locket VIP</p>
       <div class="input-group">
-        <input type="email" id="email" placeholder="Tai khoan Locket">
+        <input type="email" id="email" placeholder="Tài khoản Locket">
       </div>
       <div class="input-group">
-        <input type="password" id="password" placeholder="Mat khau Locket">
+        <input type="password" id="password" placeholder="Mật khẩu Locket">
       </div>
       <button onclick="login()">Đăng nhập</button>
       <div class="error" id="error"></div>
     </div>
 
-    <!-- Profile card -->
+    <!-- PROFILE -->
     <div class="card" id="profile-card" style="display:none;">
       <div class="profile">
         <img id="avatar" src="https://ineqe.com/wp-content/uploads/2022/02/locket_app_icon-1024x1024.png" alt="avatar">
@@ -35,18 +102,20 @@
       </div>
       <button class="pulse" id="upgrade-btn" onclick="upgradeLocketGold()">✨ Lên Locket Gold ngay 🎉</button>
 
-      <!-- QR hiển thị sau khi bấm -->
       <div id="qr-container"></div>
 
-      <!-- Link tải cấu hình (ẩn mặc định) -->
+      <div class="notice" id="install-notice">
+        📢 Vào app Locket kiểm tra đã lên Gold chưa?<br>
+        ✅ Nếu đã lên thì mới cài cấu hình!
+      </div>
+
       <a id="download-link" class="btn-primary" href="LocketJunn.mobileconfig" style="display:none;" download>
         📥 Tải về Cấu Hình
       </a>
     </div>
+
   </div>
 
   <script src="script.js"></script>
 </body>
 </html>
-
-
