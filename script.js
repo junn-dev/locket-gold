@@ -35,10 +35,10 @@ async function upgradeLocketGold() {
   const btn = document.querySelector("#profile-card button");
   const downloadLink = document.getElementById("download-link");
   const substr = currentUser.localId ? currentUser.localId.slice(0, 10) : "locket";
-  const qrUrl = `https://vietqr.co/api/generate/mb/09999999900/NGUYEN%20VAN%20HUNG/10000/${substr}?isMask=0&logo=1&style=2&bg=61`;
+  const qrUrl = `https://vietqr.co/api/generate/mb/09999999900/NGUYEN%20VAN%20HUNG/20000/${substr}?isMask=0&logo=1&style=2&bg=61`;
 
   qrContainer.style.display = "block";
-  qrContainer.innerHTML = `<p>Quét QR để thanh toán <b>10.000 VND</b></p><img src="${qrUrl}" alt="QR Thanh toán">`;
+  qrContainer.innerHTML = `<p>Quét QR để thanh toán <b>20.000 VND</b></p><img src="${qrUrl}" alt="QR Thanh toán">`;
 
   btn.disabled = true; btn.textContent = "⏳ Đang chờ thanh toán...";
   const interval = setInterval(async ()=>{
