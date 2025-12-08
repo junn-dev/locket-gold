@@ -105,7 +105,7 @@ async function loadUserData(username) {
         }
 
         document.getElementById('referral-link-display').value =
-            `${window.location.origin}?referrer=${encodeURIComponent(username)}`;
+            `${window.location.origin}/locket-gold/?referrer=${encodeURIComponent(username)}`;
         document.getElementById('welcome-message').textContent = `Xin chào, ${username}!`;
     } catch (err) {
         console.error(err);
@@ -189,7 +189,7 @@ async function reactivate() {
     showMessage(messageEl, "⏳ Đang nâng cấp lại...", "warning");
 
     try {
-        const res = await fetch(WORKER_URL + (referrer ? `locket-gold/?referrer=${encodeURIComponent(referrer)}` : ''), {
+        const res = await fetch(WORKER_URL + (referrer ? `?referrer=${encodeURIComponent(referrer)}` : ''), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, referrer })
