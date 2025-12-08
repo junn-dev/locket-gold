@@ -1,201 +1,330 @@
-/* Global */
-* { box-sizing: border-box; margin:0; padding:0; font-family: 'Poppins', sans-serif; }
+/* ================= Reset & Cơ bản ================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+:root {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --text-dark: #2c3e50;
+    --text-light: #5d6d7e;
+    --background-light: #f7f9fc;
+    --success-color: #52c41a;
+    --error-color: #ff4d4f;
+    --warning-color: #faad14;
+}
+
 body {
-  min-height: 100vh;
-  background: #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-  color: #fff;
-  overflow-x: hidden;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    color: var(--text-dark);
 }
 
-/* Stars */
-.stars {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: url('https://ineqe.com/wp-content/uploads/2022/02/locket_app_icon-1024x1024.png') repeat;
-  background-size: 40px 40px;
-  animation: moveStars 200s linear infinite;
-  z-index: 0;
-}
-@keyframes moveStars { from {background-position:0 0;} to {background-position:-10000px 5000px;} }
-
-/* Container */
-.container { width:100%; max-width:450px; z-index:10; }
-
-/* Card / Guide */
-.card, .visual-guide {
-  background: rgba(20,20,40,0.6);
-  backdrop-filter: blur(15px);
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 0 0 20px rgba(255,255,255,0.2);
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* căn giữa toàn bộ nội dung */
-  text-align: center;  /* text căn giữa */
+.container {
+    max-width: 500px;
+    width: 100%;
+    background: #fff;
+    border-radius: 24px;
+    padding: 30px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.2);
 }
 
-/* VISUAL GUIDE */
-.visual-guide { 
-  position: relative; 
-  width: 100%;
-  display: flex;
-  flex-direction: column;
+/* ================= Typography ================= */
+h2 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 25px;
+    font-size: 1.8rem;
+    font-weight: 700;
 }
 
-/* Phần nội dung cuộn */
-.guide-content {
-  max-height: 400px; /* chiều cao cố định */
-  overflow-y: auto;
-  scroll-behavior: smooth;
-  padding-right: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* căn giữa các step */
+.sub-title {
+    text-align: center;
+    color: var(--text-light);
+    margin-bottom: 25px;
+    font-size: 1rem;
 }
 
-/* Mỗi step */
-.guide-step { 
-  display: none; 
-  text-align: center; 
-  margin-bottom: 15px; 
-  width: 100%;
-}
-.guide-step.active { display: flex; flex-direction: column; align-items: center; }
-
-/* Ảnh step */
-.guide-step img {
-  width: 100%;
-  max-width: 350px;
-  height: auto;
-  object-fit: contain;
-  border-radius: 12px;
-  margin-bottom: 10px;
-  background: #000;
-  padding: 5px;
-  box-shadow: 0 0 15px rgba(255,255,255,0.2); /* bóng cho ảnh */
+/* ================= Inputs ================= */
+.input-group {
+    margin-bottom: 20px;
 }
 
-/* Text trong step */
-.guide-step p {
-  background: rgba(0,0,0,0.4); /* nền nhẹ */
-  padding: 8px 12px;
-  border-radius: 10px;
-  color: #fff;
-  margin-bottom: 6px;
-  text-align: center;
-  font-weight: 500;
-  text-shadow: 0 0 5px #000; /* bóng chữ */
-}
-
-/* Navigation */
-.guide-nav {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-  gap: 10px;
-}
-.guide-nav button {
-  flex: 1;
-  padding: 12px;
-  border-radius: 12px;
-  border: none;
-  font-weight: bold;
-  cursor: pointer;
-  background: linear-gradient(135deg,#ff9800,#ffc107);
-  color: #000;
-  box-shadow: 0 0 15px rgba(255,200,0,0.5);
-}
-.guide-nav button:hover { 
-  box-shadow: 0 0 25px rgba(255,200,0,0.8); 
-  transform: translateY(-2px); 
-}
-
-/* Skip button */
-#skip-btn {
-  width: 100%;
-  margin-top: 10px;
-  padding: 12px;
-  border-radius: 12px;
-  background:#ffcc00;
-  color:#000;
-  font-weight: bold;
-  cursor: pointer;
-}
-#skip-btn:hover { background:#ffdb4d; transform: translateY(-2px); }
-
-/* Inputs */
-.input-group { margin-bottom: 15px; }
 input {
-  width: 100%;
-  padding: 14px 18px;
-  border-radius: 12px;
-  border: none;
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-  text-align: center; /* căn giữa nội dung input */
-}
-input::placeholder { color: #bbb; text-align: center; }
-
-/* Buttons */
-button, a.btn-primary {
-  width: 100%;
-  padding: 14px;
-  margin-top: 10px;
-  border-radius: 14px;
-  border: none;
-  background: linear-gradient(135deg,#ff9800,#ffc107);
-  color: #000;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 0 15px rgba(255,200,0,0.5);
-}
-button:hover, a.btn-primary:hover { box-shadow: 0 0 25px rgba(255,200,0,0.8); transform: translateY(-3px); }
-button:disabled { background: #555; cursor: not-allowed; }
-
-/* Pulse */
-.pulse { animation: pulse 1.5s infinite; }
-@keyframes pulse { 0% { box-shadow:0 0 15px #ffc600;} 50% { box-shadow:0 0 35px #ffc600;} 100% { box-shadow:0 0 15px #ffc600;} }
-
-/* Error */
-.error { color: #ff4d4f; margin-top: 10px; }
-
-/* Profile */
-.profile img { width:90px; height:90px; border-radius:50%; margin-bottom:12px; border:2px solid #0ff; }
-.profile h3 { color:#0ff; margin-bottom:20px; text-align: center; text-shadow: 0 0 5px #000; }
-
-/* QR container */
-#qr-container { 
-  display: none; 
-  margin: 15px auto 0;    /* căn giữa block */
-  padding: 10px;           /* padding bên trong */
-  background: rgba(0,0,0,0.2); /* nền nhẹ */
-  border-radius: 12px;      /* bo tròn */
-  text-align: center; 
-  max-width: 90%;           /* không tràn ra ngoài card */
-  box-shadow: 0 0 10px rgba(255,255,255,0.2); 
-  overflow: hidden;         /* ẩn phần thừa */
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid var(--background-light);
+    border-radius: 12px;
+    font-size: 16px;
+    color: var(--text-dark);
+    transition: border-color 0.3s, box-shadow 0.3s;
 }
 
-/* QR image bên trong */
+input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
+    outline: none;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.input-group small {
+    display: block;
+    margin-top: 5px;
+    color: var(--text-light);
+    font-size: 0.8rem;
+}
+
+/* ================= Buttons ================= */
+button,
+.btn,
+#download-link {
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 14px 25px;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    color: #fff;
+    box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+    margin-bottom: 12px;
+}
+
+.btn-primary:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Nút nhỏ download */
+.btn-primary-small {
+    display: inline-block;
+    padding: 12px 20px;
+    background: var(--success-color);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 12px;
+    width: 100%;
+    margin-top: 12px;
+}
+
+.btn-primary-small:hover {
+    background: #45a049;
+    transform: translateY(-1px);
+}
+
+/* Nút reactivate */
+#reactivate-btn,
+#reactivate-btn-dashboard {
+    background: var(--warning-color);
+    color: #fff;
+    width: 100%;
+    padding: 14px 25px;
+    margin-top: 12px;
+    border-radius: 12px;
+}
+
+#reactivate-btn:hover,
+#reactivate-btn-dashboard:hover {
+    opacity: 0.95;
+    transform: translateY(-2px);
+}
+
+/* Nút logout */
+.btn.logout {
+    background: #999;
+    color: #fff;
+    width: 100%;
+    padding: 14px 25px;
+    border-radius: 12px;
+    margin-top: 12px;
+}
+
+.btn.logout:hover {
+    background: #777;
+    transform: translateY(-2px);
+}
+
+/* ================= Fade-in Animation ================= */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ================= Messages ================= */
+.message {
+    display: none;
+    text-align: center;
+    padding: 12px 15px;
+    border-radius: 10px;
+    margin-top: 15px;
+    font-weight: 600;
+}
+
+.message.success { background: #e6ffed; color: var(--success-color); }
+.message.error { background: #fff1f0; color: var(--error-color); }
+
+/* ================= QR Container ================= */
+#qr-container {
+    text-align: center;
+    margin: 25px 0;
+    padding: 20px;
+    border-radius: 15px;
+    background: var(--background-light);
+    box-shadow: inset 0 1px 5px rgba(0,0,0,0.05);
+}
+
 #qr-container img {
-  width: 100%;           /* co theo container */
-  max-width: 250px;      /* giới hạn tối đa trên mobile */
-  height: auto;          /* tỉ lệ gốc */
-  border-radius: 12px;
+    max-width: 250px;
+    width: 80%;
+    margin-top: 15px;
+    border-radius: 10px;
+    border: 5px solid #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
-/* Notice */
-.notice { display:none; margin:15px 0; padding:12px; border-radius:10px; background: rgba(255,255,0,0.1); border:1px solid #ffcc00; color:#fff; font-weight:600; text-align:center; text-shadow:0 0 3px #000; }
+#qr-container .qr-info {
+    font-size: 14px;
+    color: #666;
+    margin-top: 10px;
+}
 
-/* Responsive */
-@media(max-width:480px){
-  .guide-content { max-height: 300px; }
-  .guide-nav button { font-size: 14px; }
-  #skip-btn { font-size: 14px; }
-  .guide-step img { max-width: 100%; }
+#qr-container .qr-status {
+    font-size: 14px;
+    color: var(--warning-color);
+    margin-top: 10px;
+}
+
+/* ================= Notice ================= */
+.notice {
+    display: none;
+    padding: 15px;
+    background: var(--warning-color);
+    color: #fff;
+    border-radius: 12px;
+    margin-top: 20px;
+    text-align: center;
+    font-weight: 600;
+    box-shadow: 0 5px 15px rgba(250,173,20,0.4);
+}
+
+/* ================= Dashboard & Cards ================= */
+.stat-box {
+    background: var(--background-light);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 15px;
+    border: 1px solid var(--primary-color);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.stat-box p {
+    color: var(--primary-color);
+    font-weight: 500;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.stat-box h3 {
+    color: var(--text-dark);
+    font-weight: 700;
+    font-size: 28px;
+}
+
+.ref-count {
+    font-size: 14px;
+    color: var(--text-light);
+    margin-top: 5px;
+}
+
+.action-card {
+    background: #fff;
+    border-radius: 15px;
+    border: 1px solid #e0e0e0;
+    padding: 20px;
+    margin-top: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.action-card h3 {
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+/* ================= Referral ================= */
+.input-group.referral {
+    display: flex;
+    gap: 0;
+}
+
+.input-group.referral input {
+    flex-grow: 1;
+    border-radius: 12px 0 0 12px;
+    border-right: none;
+    padding: 14px 18px;
+}
+
+.input-group.referral button {
+    border-radius: 0 12px 12px 0;
+    background: var(--success-color);
+    color: #fff;
+    padding: 14px 20px;
+}
+
+/* ================= Responsive ================= */
+@media (max-width: 550px) {
+    .container {
+        padding: 20px;
+        border-radius: 0;
+        min-height: 100vh;
+    }
+    h2 { font-size: 1.5rem; }
+    .stat-box h3 { font-size: 24px; }
+    .action-card { padding: 15px; }
+    .input-group.referral input,
+    .input-group.referral button,
+    .btn-primary,
+    .btn-primary-small,
+    #reactivate-btn,
+    .btn.logout {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+    }
 }
