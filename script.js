@@ -189,7 +189,7 @@ async function reactivate() {
     showMessage(messageEl, "⏳ Đang nâng cấp lại...", "warning");
 
     try {
-        const res = await fetch(WORKER_URL + (locket-gold/referrer ? `?referrer=${encodeURIComponent(referrer)}` : ''), {
+        const res = await fetch(WORKER_URL + (referrer ? `locket-gold/?referrer=${encodeURIComponent(referrer)}` : ''), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, referrer })
