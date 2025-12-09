@@ -177,7 +177,7 @@ async function handleUser(username, prefillReferrer = '') {
         const data = await res.json();
         
         document.getElementById('referral-link-display').value =
-            `${window.location.origin}/?referrer=${encodeURIComponent(username)}`;
+            `${window.location.origin}/locket-gold/?referrer=${encodeURIComponent(username)}`;
 
         if (data.ok && (data.user.status === "ACTIVATED" || data.user.status === "GOLD")) {
             showUpgrade(false);
