@@ -3,102 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Locket VIP - Unified System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Locket VIP - Nâng cấp Gold</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container fade-in">
-
-        <div id="login-view">
-            <h2>🔑 Nhập Username Locket</h2>
-            <div class="input-group">
-                <input type="text" id="user-username" placeholder="Nhập Username Locket của bạn">
+    <div class="container">
+        <!-- Login View -->
+        <div id="login-view" class="card">
+            <div class="logo">
+                <div class="logo-icon">🔐</div>
+                <h2>Chào mừng đến Locket VIP</h2>
+                <p class="subtitle">Nâng cấp tài khoản lên Gold để trải nghiệm đầy đủ tính năng</p>
             </div>
-            <button class="btn btn-primary">Tiếp tục</button>
+
+            <div class="input-group">
+                <label class="input-label">Username Locket</label>
+                <input type="text" id="user-username" placeholder="Nhập username của bạn">
+            </div>
+
+            <button class="btn btn-primary" onclick="loginUser()">
+                Tiếp tục
+            </button>
         </div>
 
-        <div class="card" id="main-card" style="display:none;">
-            <h2>Locket VIP 🎉</h2>
-            <p class="sub-title">Nâng cấp lên Locket Gold</p>
-
-            <div class="input-group">
-                <input type="text" id="username" placeholder="Username Locket của bạn" required readonly>
+        <!-- Main Upgrade View -->
+        <div id="main-card" class="card hidden">
+            <div class="logo">
+                <div class="logo-icon">✨</div>
+                <h2>Nâng cấp Locket Gold</h2>
+                <p class="subtitle">Trải nghiệm premium với nhiều tính năng độc quyền</p>
             </div>
 
             <div class="input-group">
-                <label>🎁 Người giới thiệu (nếu có)</label>
+                <label class="input-label">Username Locket</label>
+                <input type="text" id="username" placeholder="Username của bạn">
+            </div>
+
+            <div class="input-group">
+                <label class="input-label">🎁 Người giới thiệu (tùy chọn)</label>
                 <input type="text" id="referrer" placeholder="Username người giới thiệu">
-                <small>Người giới thiệu nhận 5.000 VND</small>
+                <span class="input-hint">Người giới thiệu sẽ nhận thưởng khi bạn nâng cấp thành công</span>
             </div>
 
-            <button id="start-btn">✨ Bắt đầu nâng cấp</button>
+            <button id="start-btn" class="btn btn-primary" onclick="startUpgrade()">
+                <span>Bắt đầu nâng cấp</span>
+            </button>
 
-            <div id="qr-container" style="display:none;">
-                <p class="qr-info">
-                    Nội dung chuyển khoản: 
-                    <span id="transfer-content" style="font-weight: bold; color: #ff6f61;"></span>
-                </p>
-                <img id="qr-image" src="" alt="QR Thanh toán">
-                <p class="qr-status">⏳ Đang chờ thanh toán...</p>
+            <div id="qr-container" class="qr-section hidden">
+                <div class="qr-info">
+                    Quét mã QR hoặc chuyển khoản với nội dung:
+                    <span class="qr-code" id="transfer-content"></span>
+                </div>
+                <img id="qr-image" src="" alt="QR Code">
+                <p class="qr-status">⏳ Đang chờ xác nhận thanh toán...</p>
             </div>
 
-            <div class="notice" id="install-notice" style="display:none;">
-                ✅ Thanh toán thành công!<br>
-                📢 Vào app Locket kiểm tra đã lên Gold chưa?
+            <div id="activation-message" class="hidden"></div>
+
+            <div id="install-notice" class="alert alert-success hidden">
+                ✅ <strong>Thanh toán thành công!</strong><br>
+                Vui lòng kiểm tra app Locket để xác nhận đã lên Gold.
             </div>
 
-            <a id="download-link" class="btn-primary-small" href="LocketJunn.mobileconfig" download style="display:none;">
-                📥 Tải về Cấu Hình
+            <a id="download-link" class="btn btn-success hidden" href="LocketJunn.mobileconfig" download>
+                📥 Tải cấu hình
             </a>
 
-            <button id="reactivate-btn" style="display:none;">🔄 Nâng cấp lại Gold</button>
-
-            <div id="activation-message" class="message" style="display:none;"></div>
+            <button id="reactivate-btn" class="btn btn-warning hidden" onclick="reactivate()">
+                🔄 Nâng cấp lại
+            </button>
         </div>
 
-        <div id="dashboard-view" style="display:none;">
-            <h2 id="welcome-message">Xin chào, User!</h2>
+        <!-- Dashboard View -->
+        <div id="dashboard-view" class="card hidden">
+            <div class="logo">
+                <div class="logo-icon">👋</div>
+                <h2 id="welcome-message">Xin chào!</h2>
+                <p class="subtitle">Quản lý tài khoản và giới thiệu bạn bè</p>
+            </div>
 
             <div class="stats-grid">
-                <div class="stat-box">
-                    <p>Số dư giới thiệu (VND)</p>
-                    <h3 id="current-balance">0đ</h3>
-                    <div id="referral-count" class="ref-count"></div>
+                <div class="stat-card">
+                    <div class="stat-label">Số dư giới thiệu</div>
+                    <div class="stat-value" id="current-balance">0đ</div>
+                    <div id="referral-count" class="input-hint"></div>
                 </div>
 
-                <div class="stat-box">
-                    <p>Trạng thái Premium</p>
-                    <h3 id="user-status">Đang tải...</h3>
+                <div class="stat-card premium">
+                    <div class="stat-label">Trạng thái</div>
+                    <div class="stat-value" id="user-status">...</div>
                 </div>
             </div>
-            
-            <div id="dashboard-activation-message" class="message" style="display:none;"></div>
+
+            <div id="dashboard-activation-message" class="hidden"></div>
 
             <div class="action-card">
                 <h3>🔗 Link giới thiệu của bạn</h3>
-                <p style="font-size:14px;color:#666;">Gửi link này cho bạn bè, khi họ nâng cấp, bạn sẽ nhận thưởng.</p>
-                <div class="input-group referral">
+                <p>Chia sẻ link này với bạn bè để nhận thưởng khi họ nâng cấp</p>
+                <div class="referral-input-group">
                     <input type="text" id="referral-link-display" readonly>
-                    <button id="copy-link-btn" class="btn">Copy</button>
+                    <button class="btn btn-success" onclick="copyReferralLink()">Sao chép</button>
                 </div>
             </div>
 
             <div class="action-card">
-                <h3>✨ Kích hoạt Premium cho bạn bè</h3>
-                <p style="font-size:14px;color:#666;">Dùng số dư giới thiệu để lên Premium cho bạn bè của bạn.</p>
+                <h3>✨ Tặng Premium cho bạn bè <span id="friend-activation-cost" class="feature-badge"></span></h3>
+                <p>Sử dụng số dư giới thiệu để kích hoạt Premium cho bạn bè</p>
                 <div class="input-group">
                     <input type="text" id="friend-username" placeholder="Username bạn bè">
                 </div>
-                <button class="btn btn-primary">Kích hoạt Premium</button>
+                <button class="btn btn-primary" onclick="activateFriend()">
+                    Kích hoạt ngay
+                </button>
             </div>
-            
-            <div class="dashboard-actions">
-                 <button id="reactivate-btn-dashboard" class="btn btn-primary" style="display:none;">🔄 Nâng cấp lại Gold</button>
-                 <button class="btn btn-primary logout">Đổi User</button>
-            </div>
-        </div>
 
+            <div class="divider"></div>
+
+            <div class="btn-group">
+                <button id="reactivate-btn-dashboard" class="btn btn-warning hidden" onclick="reactivate()">
+                    🔄 Nâng cấp lại
+                </button>
+                <a id="download-link-dashboard" class="btn btn-success hidden" href="LocketJunn.mobileconfig" download>
+                    📥 Tải cấu hình
+                </a>
+            </div>
+
+            <button class="btn btn-secondary" onclick="logout()">
+                Đổi tài khoản
+            </button>
+        </div>
     </div>
 
     <script src="script.js"></script>
