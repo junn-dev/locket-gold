@@ -1,29 +1,27 @@
 // ============================================
-// FRONTEND JAVASCRIPT CHO LOCKET VIP SYSTEM
+// LOCKET VIP SYSTEM - PROFESSIONAL VERSION
+// VERSION: Optimized Frontend (FIXED UX)
 // ============================================
 
-// --- CẤU HÌNH CƠ BẢN ---
+// --- CONFIG & CONSTANTS ---
 const WORKER_URL = "https://locket-vip.hungnguyen-junn.workers.dev";
 const QR_BANK_ID = "MB";
 const QR_ACCOUNT_NO = "09999999900";
 const QR_ACCOUNT_NAME = "NGUYEN VAN HUNG";
+const POLL_INTERVAL_MS = 5000; // 5 giây
 
-// Biến toàn cục
 let DYNAMIC_CONFIG = {
     ACTIVATION_COST: 20000,
     REFERRAL_REWARD: 5000,
 };
 
 let currentUsername = localStorage.getItem('locket_user') || null;
-let pollInterval = null;
+let pollTimer = null; // Đổi tên biến interval thành timer để dễ hiểu hơn
+let configLoaded = false;
 
 // =====================
-// --- Utilities ---
+// UTILITIES
 // =====================
-
-/**
- * Format số tiền theo định dạng Việt Nam
- */
 function formatMoney(amount) {
     return new Intl.NumberFormat('vi-VN', { 
         style: 'currency', 
@@ -31,140 +29,153 @@ function formatMoney(amount) {
     }).format(amount || 0);
 }
 
-/**
- * Chuẩn hóa username: xóa ký tự '@' ở đầu nếu có
- */
 function cleanUsername(username) {
     if (!username) return '';
     let cleaned = username.trim();
     if (cleaned.startsWith('@')) {
         cleaned = cleaned.substring(1);
     }
+    // Regex: Chỉ giữ lại chữ cái, số, gạch dưới (_) và dấu chấm (.)
+    cleaned = cleaned.replace(/[^a-zA-Z0-9_.]/g, ''); 
     return cleaned;
 }
 
-/**
- * Hiển thị view cụ thể và ẩn các view khác
- */
 function showView(view) {
-    document.getElementById('login-view').classList.add('hidden');
-    document.getElementById('main-card').classList.add('hidden');
-    document.getElementById('dashboard-view').classList.add('hidden');
-    document.getElementById(view).classList.remove('hidden');
+    ['login-view', 'main-card', 'dashboard-view'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+    });
+    const targetEl = document.getElementById(view);
+    if (targetEl) targetEl.classList.remove('hidden');
 }
 
-/**
- * Hiển thị thông báo
- */
 function showMessage(el, msg, type) {
-    el.innerHTML = msg;
+    if (!el) return;
+    const icons = {
+        success: '✅',
+        warning: '⚠️',
+        error: '❌',
+        info: 'ℹ️'
+    };
+    el.innerHTML = `<div style="display:flex;align-items:flex-start;gap:12px;">
+        <span style="font-size:20px;flex-shrink:0;">${icons[type]}</span>
+        <div>${msg}</div>
+    </div>`;
     el.className = `alert alert-${type}`;
     el.classList.remove('hidden');
 }
 
-/**
- * Ẩn thông báo
- */
 function hideMessage(el) {
     if (el) el.classList.add('hidden');
 }
 
-/**
- * Dừng polling
- */
 function clearPolling() {
-    if (pollInterval) {
-        clearInterval(pollInterval);
+    if (pollTimer) clearInterval(pollTimer);
+    pollTimer = null;
+    console.log("⏸️ Polling dừng.");
+}
+
+function showLoadingScreen(show = true) {
+    const loadingEl = document.getElementById('global-loading'); 
+    if (loadingEl) {
+        loadingEl.classList.toggle('hidden', !show);
     }
-    pollInterval = null;
+}
+
+function copyToClipboard(elementId, successMessage = "✅ Đã sao chép!") {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+
+    const textToCopy = el.textContent || el.value;
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textToCopy)
+            .then(() => alert(successMessage))
+            .catch(() => fallbackCopy(textToCopy, successMessage));
+    } else {
+        fallbackCopy(textToCopy, successMessage);
+    }
+}
+
+function fallbackCopy(textToCopy, successMessage) {
+    const tempInput = document.createElement('textarea');
+    tempInput.value = textToCopy;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(tempInput);
+    alert(successMessage);
 }
 
 // =====================
-// --- Dynamic Config ---
+// CONFIG & DISPLAY
 // =====================
-
-/**
- * Lấy cấu hình động từ API
- */
 async function fetchConfig() {
+    if (configLoaded) return;
+    
     let configData = null;
 
-    // Thử lấy từ admin/stats
     try {
-        const adminRes = await fetch(`${WORKER_URL}/admin/stats`);
-        const adminData = await adminRes.json();
-        if (adminData.ok && adminData.data && adminData.data.config) {
-            configData = adminData.data.config;
-        }
+        // Ưu tiên /user/config vì nó nhẹ nhất
+        const res = await fetch(`${WORKER_URL}/user/config`); 
+        const data = await res.json();
+        if (data.ok && data.config) configData = data.config;
     } catch (err) {
-        console.warn("⚠️ Không thể tải cấu hình từ /admin/stats.");
+        console.warn("⚠️ Không thể tải config từ /user/config:", err);
     }
-
-    // Nếu không có, thử từ user/check
-    if (!configData) {
-        try {
-            const userCheckRes = await fetch(`${WORKER_URL}/user/check?username=__system__`);
-            const userCheckData = await userCheckRes.json();
-            if (userCheckData.config) {
-                configData = userCheckData.config;
-            }
-        } catch (err) {
-            console.warn("⚠️ Không thể tải cấu hình từ /user/check.");
-        }
-    }
-
-    // Cập nhật config nếu có
+    
     if (configData) {
-        DYNAMIC_CONFIG.ACTIVATION_COST = configData.ACTIVATION_COST || DYNAMIC_CONFIG.ACTIVATION_COST;
-        DYNAMIC_CONFIG.REFERRAL_REWARD = configData.REFERRAL_REWARD || DYNAMIC_CONFIG.REFERRAL_REWARD;
-        console.log("✅ Cấu hình tải thành công:", DYNAMIC_CONFIG);
+        DYNAMIC_CONFIG.ACTIVATION_COST = parseInt(configData.ACTIVATION_COST) || DYNAMIC_CONFIG.ACTIVATION_COST;
+        DYNAMIC_CONFIG.REFERRAL_REWARD = parseInt(configData.REFERRAL_REWARD) || DYNAMIC_CONFIG.REFERRAL_REWARD;
+        console.log("✅ Config loaded:", DYNAMIC_CONFIG);
+        configLoaded = true;
     }
-
-    // 🔥 Đảm bảo updateCostDisplay được gọi ngay sau khi config được tải
-    updateCostDisplay(); 
+    
+    updateCostDisplay();
 }
 
-/**
- * Cập nhật hiển thị chi phí và thưởng
- */
 function updateCostDisplay() {
     const cost = formatMoney(DYNAMIC_CONFIG.ACTIVATION_COST);
     const reward = formatMoney(DYNAMIC_CONFIG.REFERRAL_REWARD);
 
-    // Main Card
-    const hint = document.querySelector('#main-card .input-hint');
+    // Main card hint
+    const hint = document.getElementById('referrer-reward');
     if (hint) {
-        hint.textContent = `Người giới thiệu nhận ${reward}`;
+        hint.innerHTML = `💡 Người giới thiệu nhận <strong>${reward}</strong>`;
     }
 
+    // Start Button
     const startBtn = document.getElementById('start-btn');
-    if (startBtn && !startBtn.disabled) {
-        // Chỉ cập nhật nội dung nút nếu không đang ở trạng thái loading (disabled)
-        startBtn.innerHTML = `Bắt đầu nâng cấp <span style="opacity:0.8">(${cost})</span>`;
+    if (startBtn) {
+        const content = `Bắt đầu nâng cấp <small style="opacity:0.8;font-size:14px;">(${cost})</small>`;
+        const span = startBtn.querySelector('span:last-child');
+        if (span) span.innerHTML = content;
     }
+
+    // Reactivate Buttons
+    const reactivateContent = `Nâng cấp lại`;
+    [document.getElementById('reactivate-btn'), document.getElementById('reactivate-btn-dashboard')].forEach(btn => {
+        if (btn) {
+            const span = btn.querySelector('span:last-child');
+            if (span) span.innerHTML = reactivateContent;
+        }
+    });
 
     // Dashboard
     const friendCost = document.getElementById('friend-activation-cost');
-    if (friendCost) {
-        friendCost.textContent = cost;
-    }
+    if (friendCost) friendCost.textContent = cost;
+
+    const referralReward = document.getElementById('referral-reward-amount');
+    if (referralReward) referralReward.textContent = reward;
 }
 
 // =====================
-// --- Init App ---
+// INIT & AUTH
 // =====================
-
-/**
- * Khởi tạo ứng dụng
- */
 async function initApp() {
-    // 💥 Dùng await để đảm bảo code dừng và chờ cấu hình tải xong
+    showLoadingScreen(true);
     await fetchConfig();
     
-    // updateCostDisplay() đã được gọi bên trong fetchConfig()
-    // Không cần gọi lại ở đây trừ khi bạn muốn chắc chắn tuyệt đối
-    // updateCostDisplay(); 
-
     const urlParams = new URLSearchParams(window.location.search);
     const referrerFromURL = cleanUsername(urlParams.get('referrer') || '');
 
@@ -172,26 +183,19 @@ async function initApp() {
         await handleUser(currentUsername, referrerFromURL);
     } else {
         showView('login-view');
-        document.getElementById('user-username').value = '';
-        if (referrerFromURL) {
-            document.getElementById('referrer').value = referrerFromURL;
-        }
+        const userUsernameEl = document.getElementById('user-username');
+        if (userUsernameEl) userUsernameEl.value = '';
     }
+
+    updateCostDisplay();
+    showLoadingScreen(false);
 }
 
-// =====================
-// --- Login & Logout ---
-// =====================
-
-/**
- * Xử lý đăng nhập user
- */
 async function loginUser() {
-    const rawUsername = document.getElementById('user-username').value;
-    const username = cleanUsername(rawUsername);
+    const username = cleanUsername(document.getElementById('user-username')?.value);
 
     if (!username) {
-        alert("Vui lòng nhập Username!");
+        alert("⚠️ Vui lòng nhập username!");
         return;
     }
 
@@ -201,127 +205,320 @@ async function loginUser() {
     const urlParams = new URLSearchParams(window.location.search);
     const referrerFromURL = cleanUsername(urlParams.get('referrer') || '');
 
+    await fetchConfig(); // Tải lại config nếu chưa load
     await handleUser(username, referrerFromURL);
 }
 
-/**
- * Đăng xuất
- */
 function logout() {
     localStorage.removeItem('locket_user');
     clearPolling();
     currentUsername = null;
     showView('login-view');
-    document.getElementById('user-username').value = '';
-    document.getElementById('referrer').value = '';
+    const userUsernameEl = document.getElementById('user-username');
+    if (userUsernameEl) userUsernameEl.value = '';
+    
+    fetchConfig().then(() => updateCostDisplay());
 }
 
 // =====================
-// --- Handle User ---
+// USER HANDLER (Luồng chính)
 // =====================
+function hideUpgradeElements() {
+    ['qr-container', 'install-notice', 'download-link', 'reactivate-btn'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+    });
+    
+    const referrerContainer = document.getElementById('referrer-container');
+    if (referrerContainer) referrerContainer.classList.remove('hidden');
 
-/**
- * Xử lý user sau khi login
- */
+    const startBtn = document.getElementById('start-btn');
+    if (startBtn) {
+        startBtn.classList.remove('hidden');
+        startBtn.disabled = false;
+    }
+
+    hideMessage(document.getElementById('activation-message'));
+    updateCostDisplay();
+}
+
 async function handleUser(username, prefillReferrer = '') {
     clearPolling();
     currentUsername = username;
+    const messageEl = document.getElementById('activation-message');
+    
+    showLoadingScreen(true);
 
-    // Tải lại config và cập nhật hiển thị giá
-    await fetchConfig();
+    // FIX: Xóa tham số referrer khỏi URL sau khi đã đọc
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('referrer')) {
+        urlParams.delete('referrer');
+        const newUrl = `${window.location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}${window.location.hash}`;
+        window.history.replaceState({}, document.title, newUrl);
+    }
+    
+    if (!configLoaded) await fetchConfig();
 
-    // Đặt username vào form
-    document.getElementById('username').value = username;
-    document.getElementById('username').readOnly = false;
+    // Cập nhật giá trị input
+    const usernameInput = document.getElementById('username');
+    if (usernameInput) {
+        usernameInput.value = username;
+        usernameInput.readOnly = false;
+    }
 
-    if (prefillReferrer) {
-        document.getElementById('referrer').value = prefillReferrer;
+    const referrerInput = document.getElementById('referrer');
+    if (prefillReferrer && referrerInput) {
+        referrerInput.value = prefillReferrer;
     }
 
     try {
         const res = await fetch(`${WORKER_URL}/user/check?username=${encodeURIComponent(username)}`);
         const data = await res.json();
 
-        // Tạo referral link
-        document.getElementById('referral-link-display').value =
-            `${window.location.origin}${window.location.pathname}?referrer=${encodeURIComponent(username)}`;
+        if (data.config) {
+            DYNAMIC_CONFIG.ACTIVATION_COST = parseInt(data.config.ACTIVATION_COST) || DYNAMIC_CONFIG.ACTIVATION_COST;
+            DYNAMIC_CONFIG.REFERRAL_REWARD = parseInt(data.config.REFERRAL_REWARD) || DYNAMIC_CONFIG.REFERRAL_REWARD;
+            updateCostDisplay();
+        }
+
+        const referralLink = document.getElementById('referral-link-display');
+        if (referralLink) {
+            referralLink.value = `${window.location.origin}${window.location.pathname}?referrer=${encodeURIComponent(username)}`;
+        }
 
         if (data.ok && (data.user.status === "ACTIVATED" || data.user.status === "GOLD")) {
-            // Đã kích hoạt -> Dashboard
+            // Trường hợp 1: Đã kích hoạt (ACTIVATED/GOLD)
             showView('dashboard-view');
-            loadUserData(username, data.user);
+            hideMessage(messageEl);
+            await loadUserData(username, data.user);
+
+        } else if (data.user?.status === "TXN_USED" || data.user?.status === "RC_FAILED" || data.user?.status === "PENDING") {
+            // Trường hợp 2: Đã thanh toán, bị lỗi kích hoạt, hoặc đang PENDING (cần thanh toán/kích hoạt lại)
+            // Gọi startUpgrade với cờ isRecheck để kích hoạt luồng QR/Reactivate mà không cần POST lại
+            await startUpgrade(true);
+            
         } else {
-            // Chưa kích hoạt -> Upgrade view
+            // Trường hợp 3: Chưa đăng ký/Chưa có record (UNREGISTERED)
             showView('main-card');
             hideUpgradeElements();
-
-            // Hiển thị các nút phù hợp với status
-            if (data.user?.status === "TXN_USED" || data.user?.status === "RC_FAILED") {
-                document.getElementById('install-notice').classList.remove('hidden');
-                document.getElementById('download-link').classList.remove('hidden');
-                document.getElementById('reactivate-btn').classList.remove('hidden');
-                showMessage(
-                    document.getElementById('activation-message'),
-                    "📢 Thanh toán thành công nhưng kích hoạt thất bại. Vui lòng nâng cấp lại.",
-                    "warning"
-                );
-            }
+            hideMessage(messageEl);
         }
+
     } catch (err) {
-        console.error(err);
-        alert("Lỗi kết nối API Worker!");
+        console.error("❌ Lỗi API khi check user:", err);
+        alert("Lỗi kết nối! Vui lòng thử lại.");
         showView('login-view');
+    } finally {
+        updateCostDisplay();
+        showLoadingScreen(false);
     }
 }
 
-/**
- * Ẩn các phần tử nâng cấp
- */
-function hideUpgradeElements() {
-    document.getElementById('qr-container').classList.add('hidden');
-    document.getElementById('install-notice').classList.add('hidden');
-    document.getElementById('download-link').classList.add('hidden');
-    document.getElementById('reactivate-btn').classList.add('hidden');
-    document.getElementById('start-btn').classList.remove('hidden');
-    document.getElementById('start-btn').disabled = false;
-    hideMessage(document.getElementById('activation-message'));
-    // Luôn cập nhật giá khi reset view để đảm bảo giá mới nhất
-    updateCostDisplay(); 
+
+// =====================
+// UPGRADE & REACTIVATE
+// =====================
+async function startUpgrade(isRecheck = false) {
+    const username = cleanUsername(document.getElementById('username')?.value);
+    const referrer = cleanUsername(document.getElementById('referrer')?.value || '');
+    const messageEl = document.getElementById('activation-message');
+    
+    if (!username) {
+        showMessage(messageEl, "Vui lòng nhập username!", "error");
+        return;
+    }
+
+    localStorage.setItem('locket_user', username);
+    currentUsername = username;
+
+    await fetchConfig();
+    const cost = DYNAMIC_CONFIG.ACTIVATION_COST;
+
+    const startBtn = document.getElementById('start-btn');
+    
+    if (!isRecheck) { 
+        if (startBtn) {
+            startBtn.disabled = true;
+            startBtn.innerHTML = '<div class="spinner"></div><span>Đang xử lý...</span>';
+        }
+    }
+    
+    const referrerContainer = document.getElementById('referrer-container');
+
+    try {
+        const endpoint = isRecheck ? `${WORKER_URL}/user/check?username=${encodeURIComponent(username)}` : WORKER_URL;
+        
+        const fetchOptions = isRecheck ? { method: "GET" } : {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, referrer })
+        };
+        
+        const res = await fetch(endpoint, fetchOptions);
+
+        const data = await res.json();
+        
+        clearPolling(); 
+        
+        if (data.ok && (data.flow === 'ACTIVATED_SUCCESS' || data.user?.status === 'ACTIVATED' || data.user?.status === 'GOLD')) {
+            // Trường hợp 1: Kích hoạt thành công
+            showMessage(
+                messageEl,
+                `<strong>Nâng cấp Gold thành công! 🎉</strong><br>${data.referral_info || ''}`,
+                "success"
+            );
+
+            document.getElementById('install-notice')?.classList.remove('hidden');
+            document.getElementById('download-link')?.classList.remove('hidden');
+            if (startBtn) startBtn.classList.add('hidden');
+            document.getElementById('reactivate-btn')?.classList.remove('hidden');
+            
+            if (referrerContainer) referrerContainer.classList.add('hidden');
+
+            setTimeout(() => handleUser(username), 3000);
+
+        } else if (data.flow === 'PAYMENT_REQUIRED') {
+            // Trường hợp 2: Yêu cầu thanh toán (Hiển thị QR)
+            const substr = data.localIdCode;
+            const qrImage = document.getElementById('qr-image');
+
+            if (qrImage) {
+                qrImage.src = `https://vietqr.co/api/generate/${QR_BANK_ID}/${QR_ACCOUNT_NO}/${QR_ACCOUNT_NAME}/${cost}/${encodeURIComponent(substr)}?isMask=0&logo=1&style=2&bg=61`;
+            }
+
+            document.getElementById('qr-container')?.classList.remove('hidden');
+            if (startBtn) startBtn.classList.add('hidden');
+            
+            if (referrerContainer) referrerContainer.classList.add('hidden');
+            
+            // Bắt đầu polling để kiểm tra giao dịch
+            startPolling(username, false); 
+
+        } else if (data.flow === 'ALREADY_ACTIVATED_PANEL') {
+            // Trường hợp 3: Đã Premium
+            showMessage(
+                messageEl,
+                "<strong>Bạn đã là Premium!</strong><br>Đang chuyển sang Dashboard...",
+                "success"
+            );
+            setTimeout(() => handleUser(username), 2000);
+
+        } else if (data.user?.status === "TXN_USED" || data.user?.status === "RC_FAILED" || data.user?.status === "PENDING") {
+            // Trường hợp 4: Đã thanh toán nhưng chưa kích hoạt thành công, hoặc đang PENDING (không tìm thấy QR code trong data.flow=PAYMENT_REQUIRED)
+            // Hiển thị nút reactivate/thông báo
+            showView('main-card');
+            hideUpgradeElements(); 
+
+            startPolling(username, true); // Bắt đầu polling để check chuyển trạng thái
+        }
+        else {
+            // Trường hợp 5: Lỗi khác 
+            showMessage(messageEl, data.error || data.details || "Có lỗi xảy ra!", "error");
+            if (startBtn) {
+                startBtn.classList.remove('hidden');
+                startBtn.disabled = false;
+                updateCostDisplay();
+            }
+        }
+    } catch (err) {
+        showMessage(messageEl, `Lỗi kết nối: ${err.message}`, "error");
+    } finally {
+        if (startBtn && !isRecheck) {
+            startBtn.disabled = false;
+            updateCostDisplay();
+        }
+    }
+}
+
+async function reactivate() {
+    const username = currentUsername;
+    const referrer = cleanUsername(document.getElementById('referrer')?.value || '');
+
+    const isDashboard = !document.getElementById('dashboard-view')?.classList.contains('hidden');
+    const messageEl = isDashboard
+        ? document.getElementById('dashboard-activation-message')
+        : document.getElementById('activation-message');
+
+    if (!messageEl || !username) return;
+
+    const btns = [
+        document.getElementById('reactivate-btn'),
+        document.getElementById('reactivate-btn-dashboard')
+    ];
+    btns.forEach(btn => { if (btn) btn.disabled = true; });
+
+    showMessage(messageEl, "Đang nâng cấp lại...", "warning");
+
+    try {
+        // Gửi POST request tới main flow, backend sẽ cố gắng kích hoạt lại RevenueCat
+        const res = await fetch(WORKER_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, referrer })
+        });
+
+        const data = await res.json();
+        clearPolling();
+
+        if (data.ok || data.flow === 'ALREADY_ACTIVATED_PANEL') {
+            showMessage(messageEl, "<strong>Nâng cấp Gold thành công! 🎉</strong>", "success");
+            
+            if (isDashboard) {
+                await loadUserData(username);
+            } else {
+                setTimeout(() => handleUser(username), 2000);
+            }
+        } else {
+            showMessage(messageEl, data.error || data.details || "Nâng cấp thất bại!", "error");
+        }
+    } catch (err) {
+        showMessage(messageEl, `Lỗi kết nối: ${err.message}`, "error");
+    } finally {
+        btns.forEach(btn => { if (btn) btn.disabled = false; });
+        updateCostDisplay();
+    }
 }
 
 // =====================
-// --- Dashboard ---
+// DASHBOARD
 // =====================
-
-/**
- * Load dữ liệu user cho dashboard
- */
-async function loadUserData(username, initialData) {
+async function loadUserData(username, initialData = null) {
     let user = initialData;
 
-    document.getElementById('welcome-message').textContent = `Xin chào, ${username}!`;
+    const welcomeMsg = document.getElementById('welcome-message');
+    if (welcomeMsg) welcomeMsg.textContent = `Xin chào, ${username}!`;
+    
+    const balanceEl = document.getElementById('current-balance');
+    if (balanceEl) balanceEl.textContent = '...';
 
     try {
         if (!user) {
             const res = await fetch(`${WORKER_URL}/user/check?username=${encodeURIComponent(username)}`);
             const data = await res.json();
-            if (data.ok) user = data.user;
+            if (data.ok) {
+                user = data.user;
+                if (data.config) {
+                    DYNAMIC_CONFIG.ACTIVATION_COST = parseInt(data.config.ACTIVATION_COST) || DYNAMIC_CONFIG.ACTIVATION_COST;
+                    DYNAMIC_CONFIG.REFERRAL_REWARD = parseInt(data.config.REFERRAL_REWARD) || DYNAMIC_CONFIG.REFERRAL_REWARD;
+                }
+            }
         }
 
         if (user) {
-            // Cập nhật số dư
-            document.getElementById('current-balance').textContent = formatMoney(user.balance);
+            if (balanceEl) balanceEl.textContent = formatMoney(user.balance);
 
-            // Cập nhật trạng thái
-            const statusText = user.status === 'GOLD' ? '👑 GOLD VIP' :
-                user.status === 'ACTIVATED' ? '✨ GOLD' : '❌ Chưa kích hoạt';
-            document.getElementById('user-status').textContent = statusText;
+            const statusEl = document.getElementById('user-status');
+            if (statusEl) {
+                const statusText = user.status === 'GOLD' ? '👑 GOLD' :
+                    user.status === 'ACTIVATED' ? '✨ GOLD' : '❌ Chưa kích hoạt';
+                statusEl.textContent = statusText;
+            }
 
-            // Số lượt giới thiệu
-            document.getElementById('referral-count').textContent =
-                `${user.referralCount || 0} lượt giới thiệu`;
+            const referralCount = document.getElementById('referral-count');
+            if (referralCount) {
+                referralCount.innerHTML = `💎 ${user.referralCount || 0} lượt giới thiệu`;
+            }
 
-            // Hiển thị/ẩn các nút
             const reactivateBtn = document.getElementById('reactivate-btn-dashboard');
             const downloadBtn = document.getElementById('download-link-dashboard');
 
@@ -334,196 +531,30 @@ async function loadUserData(username, initialData) {
             }
         }
 
-        // Cập nhật chi phí/thưởng trong Dashboard
-        updateCostDisplay(); 
+        updateCostDisplay();
     } catch (err) {
-        console.error(err);
-        document.getElementById('current-balance').textContent = 'Lỗi';
-        document.getElementById('user-status').textContent = 'Lỗi kết nối';
+        console.error("❌ Lỗi load user data:", err);
+        if (balanceEl) balanceEl.textContent = 'Lỗi';
+        const statusEl = document.getElementById('user-status');
+        if (statusEl) statusEl.textContent = 'Lỗi kết nối';
     }
 }
 
-/**
- * Copy referral link
- */
 function copyReferralLink() {
-    const input = document.getElementById('referral-link-display');
-    input.select();
-    input.setSelectionRange(0, 99999);
-
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(input.value)
-            .then(() => alert("✅ Đã sao chép link giới thiệu!"))
-            .catch(err => {
-                console.error("Could not copy:", err);
-                document.execCommand('copy');
-                alert("✅ Đã sao chép link!");
-            });
-    } else {
-        document.execCommand('copy');
-        alert("✅ Đã sao chép link!");
-    }
+    copyToClipboard('referral-link-display', "✅ Đã sao chép link giới thiệu!");
 }
 
-// =====================
-// --- Upgrade Flow ---
-// =====================
-
-/**
- * Bắt đầu nâng cấp VIP
- */
-async function startUpgrade() {
-    const rawUsername = document.getElementById('username').value;
-    const username = cleanUsername(rawUsername);
-    const referrer = cleanUsername(document.getElementById('referrer').value);
-    const messageEl = document.getElementById('activation-message');
+async function activateFriend() {
+    const referred_username = cleanUsername(document.getElementById('friend-username')?.value || '');
+    const messageEl = document.getElementById('dashboard-activation-message');
     const cost = DYNAMIC_CONFIG.ACTIVATION_COST;
 
-    if (!username) {
-        showMessage(messageEl, "⚠️ Vui lòng nhập username!", "error");
-        return;
-    }
-
-    // Cập nhật localStorage
-    localStorage.setItem('locket_user', username);
-    currentUsername = username;
-
-    // Disable button và hiển thị loading
-    const startBtn = document.getElementById('start-btn');
-    startBtn.disabled = true;
-    startBtn.innerHTML = '<span class="loading-spinner"></span> Đang xử lý...';
-
-    hideUpgradeElements(); // Sẽ gọi updateCostDisplay() ở cuối
-
-    showMessage(messageEl, "⏳ Đang xử lý yêu cầu...", "info");
-
-    try {
-        const res = await fetch(WORKER_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, referrer })
-        });
-
-        const data = await res.json();
-
-        if (data.ok) {
-            // Thành công
-            clearPolling();
-            showMessage(
-                messageEl,
-                `✅ Nâng cấp Gold thành công! 🎉 ${data.referral_info || ''}`,
-                "success"
-            );
-
-            document.getElementById('install-notice').classList.remove('hidden');
-            document.getElementById('download-link').classList.remove('hidden');
-            startBtn.classList.add('hidden');
-            document.getElementById('reactivate-btn').classList.remove('hidden');
-
-            setTimeout(() => handleUser(username), 3000);
-
-        } else if (data.flow === 'PAYMENT_REQUIRED') {
-            // Cần thanh toán
-            const substr = data.localIdCode;
-
-            document.getElementById('transfer-content').textContent = substr;
-            document.getElementById('qr-image').src =
-                `https://vietqr.co/api/generate/${QR_BANK_ID}/${QR_ACCOUNT_NO}/${QR_ACCOUNT_NAME}/${cost}/${encodeURIComponent(substr)}?isMask=0&logo=1&style=2&bg=61`;
-
-            document.getElementById('qr-container').classList.remove('hidden');
-            startBtn.classList.add('hidden');
-            showMessage(
-                messageEl,
-                `📢 Quét QR để thanh toán ${formatMoney(cost)} với nội dung: ${substr}. Hệ thống sẽ tự kiểm tra.`,
-                "info"
-            );
-
-            startPolling(username);
-
-        } else if (data.flow === 'ALREADY_ACTIVATED_PANEL') {
-            showMessage(
-                messageEl,
-                "🎉 Bạn đã là Premium! Đang kích hoạt lại dịch vụ. (Chuyển sang Dashboard)",
-                "warning"
-            );
-            setTimeout(() => handleUser(username), 2000);
-
-        } else {
-            // Lỗi khác
-            showMessage(messageEl, data.error || data.details || "❌ Có lỗi xảy ra!", "error");
-            startBtn.classList.remove('hidden');
-            startBtn.disabled = false;
-            updateCostDisplay();
-        }
-    } catch (err) {
-        showMessage(messageEl, "❌ Lỗi kết nối API: " + err.message, "error");
-        startBtn.disabled = false;
-        updateCostDisplay();
-    }
-}
-
-/**
- * Nâng cấp lại Gold
- */
-async function reactivate() {
-    const username = currentUsername;
-    const referrer = cleanUsername(document.getElementById('referrer').value);
-
-    const isDashboard = document.getElementById('dashboard-view').classList.contains('hidden') === false;
-    const messageEl = isDashboard
-        ? document.getElementById('dashboard-activation-message')
-        : document.getElementById('activation-message');
-
-    if (!messageEl || !username) return;
-
-    const reactivateBtnMain = document.getElementById('reactivate-btn');
-    const reactivateBtnDash = document.getElementById('reactivate-btn-dashboard');
-    if (reactivateBtnMain) reactivateBtnMain.disabled = true;
-    if (reactivateBtnDash) reactivateBtnDash.disabled = true;
-
-    showMessage(messageEl, "⏳ Đang nâng cấp lại...", "warning");
-
-    try {
-        const res = await fetch(WORKER_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, referrer })
-        });
-
-        const data = await res.json();
-
-        if (data.ok || data.flow === 'ALREADY_ACTIVATED_PANEL') {
-            showMessage(messageEl, "✅ Nâng cấp Gold lại thành công! 🎉", "success");
-            
-            if (isDashboard) {
-                await loadUserData(username);
-            } else {
-                setTimeout(() => handleUser(username), 2000);
-            }
-        } else {
-            showMessage(messageEl, data.error || data.details || "❌ Nâng cấp thất bại!", "error");
-        }
-    } catch (err) {
-        showMessage(messageEl, "❌ Lỗi kết nối: " + err.message, "error");
-    } finally {
-        if (reactivateBtnMain) reactivateBtnMain.disabled = false;
-        if (reactivateBtnDash) reactivateBtnDash.disabled = false;
-    }
-}
-
-/**
- * Kích hoạt Premium cho bạn bè
- */
-async function activateFriend() {
-    const referred_username = cleanUsername(document.getElementById('friend-username').value);
-    const messageElement = document.getElementById('dashboard-activation-message');
-
     if (!referred_username) {
-        showMessage(messageElement, "⚠️ Vui lòng nhập Username bạn bè.", "error");
+        showMessage(messageEl, "Vui lòng nhập Username bạn bè.", "error");
         return;
     }
 
-    showMessage(messageElement, "⏳ Đang xử lý...", "warning");
+    showMessage(messageEl, `Đang dùng ${formatMoney(cost)} để kích hoạt...`, "warning");
 
     try {
         const res = await fetch(`${WORKER_URL}/user/referral-activate`, {
@@ -539,119 +570,120 @@ async function activateFriend() {
 
         if (data.ok) {
             showMessage(
-                messageElement,
-                `✅ Đã dùng ${formatMoney(DYNAMIC_CONFIG.ACTIVATION_COST)} Gold để kích hoạt Premium cho ${referred_username}`,
+                messageEl,
+                `<strong>Thành công!</strong><br>Đã dùng ${formatMoney(cost)} để kích hoạt Gold cho <strong>${referred_username}</strong>`,
                 "success"
             );
-            document.getElementById('friend-username').value = '';
-            loadUserData(currentUsername);
+            const friendInput = document.getElementById('friend-username');
+            if (friendInput) friendInput.value = '';
+            await loadUserData(currentUsername);
         } else {
-            showMessage(messageElement, data.error || "❌ Không thành công", "error");
+            showMessage(messageEl, data.error || "Không thành công", "error");
         }
     } catch (err) {
-        showMessage(messageElement, "❌ Lỗi kết nối: " + err.message, "error");
+        showMessage(messageEl, `Lỗi kết nối: ${err.message}`, "error");
     }
 }
 
 // =====================
-// --- Polling ---
+// POLLING 
 // =====================
-
-/**
- * Bắt đầu polling để kiểm tra thanh toán (chỉ giữ QR và không gián đoạn)
- */
-function startPolling(username) {
-    console.log(`🔄 Bắt đầu kiểm tra thanh toán cho user: ${username}`);
+function startPolling(username, isReactivationCheck = false) {
+    console.log(`🔄 Bắt đầu polling cho: ${username}, Mode: ${isReactivationCheck ? 'Reactivate Check' : 'Payment Check'}`);
     clearPolling();
 
-    const qrStatusEl = document.querySelector('.qr-status');
+    const qrStatus = document.querySelector('.qr-status');
     const messageEl = document.getElementById('activation-message');
     let dotCount = 0;
 
-    pollInterval = setInterval(async () => {
+    pollTimer = setInterval(async () => {
         try {
-            // Lấy lại trạng thái user để kiểm tra thanh toán đã xong chưa
             const res = await fetch(`${WORKER_URL}/user/check?username=${encodeURIComponent(username)}`);
             const data = await res.json();
             
-            // --- TRẠNG THÁI 1: THÀNH CÔNG (ACTIVATED/GOLD) ---
-            if (data.ok && (data.user?.status === 'ACTIVATED' || data.user?.status === 'GOLD')) {
-                // Thanh toán thành công
-                clearPolling();
-                qrStatusEl.innerHTML = "✅ **Thanh toán đã được xác nhận!** Đang hoàn tất kích hoạt Premium...";
+            const referrerContainer = document.getElementById('referrer-container');
 
-                document.getElementById('qr-container').classList.add('hidden');
+            if (data.ok && (data.user?.status === 'ACTIVATED' || data.user?.status === 'GOLD')) {
+                // THÀNH CÔNG: Chuyển thẳng tới dashboard
+                clearPolling();
+                if (qrStatus) {
+                    qrStatus.innerHTML = '<span>✅</span><span>Thanh toán đã xác nhận! Đang hoàn tất...</span>';
+                }
+
+                document.getElementById('qr-container')?.classList.add('hidden');
                 showMessage(
                     messageEl,
-                    `🎉 Thanh toán thành công! Đã lên Gold. ${data.referral_info || ''}`,
+                    `<strong>Thanh toán thành công! Đã lên Gold 🎉</strong><br>${data.referral_info || ''}`,
                     "success"
                 );
 
-                document.getElementById('install-notice').classList.remove('hidden');
-                document.getElementById('download-link').classList.remove('hidden');
+                document.getElementById('install-notice')?.classList.remove('hidden');
+                document.getElementById('download-link')?.classList.remove('hidden');
+                document.getElementById('reactivate-btn')?.classList.remove('hidden');
                 
-                // Ẩn nút Start và hiển thị nút Reactivate
-                const startBtn = document.getElementById('start-btn');
-                startBtn.classList.add('hidden');
-                document.getElementById('reactivate-btn').classList.remove('hidden');
+                if (referrerContainer) referrerContainer.classList.remove('hidden');
 
                 setTimeout(() => handleUser(username), 3000);
-                return; // Dừng Polling
+                return;
 
-            } 
-            
-            // --- TRẠNG THÁI 2: LỖI THẤT BẠI HOÀN TOÀN (RC_FAILED) ---
-            // Đây là lỗi xảy ra sau khi giao dịch đã qua, cần phải dừng flow
-            else if (data.ok && data.user?.status === 'RC_FAILED') {
-                 // Lỗi kích hoạt sau khi thanh toán
+            } else if (data.user?.status === 'TXN_USED' || data.user?.status === 'RC_FAILED') {
+                // GIAO DỊCH ĐÃ VÀO, nhưng kích hoạt chưa xong/bị lỗi
                 clearPolling();
-                qrStatusEl.innerHTML = `❌ Lỗi kích hoạt! Vui lòng liên hệ hỗ trợ.`;
                 
-                // Hiển thị lại nút nâng cấp và ẩn QR
-                document.getElementById('qr-container').classList.add('hidden');
-                const startBtn = document.getElementById('start-btn');
-                startBtn.classList.remove('hidden');
-                startBtn.disabled = false;
-                updateCostDisplay();
+                if (!isReactivationCheck) {
+                    // Nếu đang ở luồng Payment Check (chưa bấm start/reactivate)
+                    if (qrStatus) {
+                        qrStatus.innerHTML = '<span>⚠️</span><span>Đã nhận thanh toán. Vui lòng bấm "Nâng cấp lại".</span>';
+                    }
+                    document.getElementById('qr-container')?.classList.add('hidden');
+                    
+                    document.getElementById('install-notice')?.classList.remove('hidden');
+                    document.getElementById('download-link')?.classList.remove('hidden');
+                    document.getElementById('reactivate-btn')?.classList.remove('hidden');
+                    
+                    showMessage(
+                        messageEl,
+                        "<strong>Thanh toán thành công.</strong><br>Vui lòng nhấn 'Nâng cấp lại' để hoàn tất quá trình kích hoạt Premium.",
+                        "warning"
+                    );
+                    
+                    if (referrerContainer) referrerContainer.classList.remove('hidden');
+                }
                 
-                showMessage(
-                    messageEl,
-                    `❌ Lỗi kích hoạt sau khi thanh toán. Vui lòng thử lại hoặc liên hệ hỗ trợ!`,
-                    "error"
-                );
-                return; // Dừng Polling
-
-            }
-            
-            // --- TRẠNG THÁI 3: VẪN CHỜ (KHÔNG THÀNH CÔNG VÀ KHÔNG THẤT BẠI HOÀN TOÀN) ---
-            else {
-                dotCount = (dotCount + 1) % 4;
+                return; // Dừng polling
                 
-                // Bỏ qua việc hiển thị lỗi API tạm thời, chỉ hiển thị "Đang chờ thanh toán"
-                qrStatusEl.textContent = `⏳ Đang chờ thanh toán${'.'.repeat(dotCount)}`;
+            } else {
+                // ĐANG CHỜ THANH TOÁN (Chỉ áp dụng cho luồng Payment Check)
+                if (!isReactivationCheck) { 
+                    dotCount = (dotCount + 1) % 4;
+                    if (qrStatus) {
+                        qrStatus.innerHTML = `<span>⏳</span><span>Đang chờ thanh toán${'.'.repeat(dotCount)}</span>`;
+                    }
+                }
             }
 
         } catch (err) {
-            // --- TRẠNG THÁI 4: LỖI KẾT NỐI (NETWORK) ---
-            // KHÔNG DỪNG POLLING, chỉ thông báo nhỏ và tiếp tục thử
-            console.error("Polling Network Error:", err);
+            console.error("Polling error:", err);
             dotCount = (dotCount + 1) % 4;
-            qrStatusEl.textContent = `❌ Lỗi kết nối mạng (Tự động thử lại)${'.'.repeat(dotCount)}`;
-            
-            // Ẩn thông báo lỗi lớn nếu nó đang hiển thị
-            hideMessage(messageEl); 
-            
-            // Đảm bảo QR container vẫn hiển thị
-            document.getElementById('qr-container').classList.remove('hidden'); 
-            
-            // Đảm bảo nút Start đang ẩn
-            document.getElementById('start-btn').classList.add('hidden');
+            if (!isReactivationCheck && qrStatus) { 
+                qrStatus.innerHTML = `<span>❌</span><span>Lỗi kết nối (Tự động thử lại)${'.'.repeat(dotCount)}</span>`;
+            }
         }
-    }, 5000);
+    }, POLL_INTERVAL_MS);
 }
 
 // =====================
-// --- Start App ---
+// BINDINGS & START
 // =====================
+window.loginUser = loginUser;
+window.logout = logout;
+window.startUpgrade = startUpgrade;
+window.reactivate = reactivate;
+window.activateFriend = activateFriend;
+window.copyReferralLink = copyReferralLink;
+window.showLoadingScreen = showLoadingScreen; 
+window.copyToClipboard = copyToClipboard;
 
-window.onload = initApp;
+window.onload = () => {
+    initApp();
+};
