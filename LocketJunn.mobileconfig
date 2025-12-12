@@ -9,11 +9,11 @@
                 <string>TLS</string>
                 <key>ServerAddresses</key>
                 <array>
-                    <string>45.90.28.0</string>
-                    <string>45.90.30.0</string>
+                    <string>45.90.28.207</string>
+                    <string>45.90.30.207</string>
                 </array>
                 <key>ServerName</key>
-                <string>bb475f.dns.nextdns.io</string>
+                <string>b18123.dns.nextdns.io</string>
             </dict>
 
             <key>PayloadDisplayName</key>
